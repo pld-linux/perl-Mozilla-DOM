@@ -1,0 +1,10 @@
+--- Mozilla-DOM-0.20/Makefile.PL.orig	2007-06-02 20:20:53.545252000 +0200
++++ Mozilla-DOM-0.20/Makefile.PL	2007-06-02 20:29:35.579001778 +0200
+@@ -89,7 +89,6 @@
+     VERSION_FROM  => 'DOM.pm',
+     ABSTRACT_FROM => 'DOM.pm',
+     XSPROTOARG    => '-noprototypes',
+-    MAN3PODS      => {},    # don't create man pages
+     LD            => "LD_RUN_PATH=$libdir $Config{ld}",
+     CC            => 'g++',
+     XSOPT         => '-C++',
