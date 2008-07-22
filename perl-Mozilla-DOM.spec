@@ -8,13 +8,12 @@
 Summary:	Mozilla::DOM - Mozilla DOM interface wrapper for Perl
 Summary(pl.UTF-8):	Mozilla::DOM - perlowy wrapper interfejsu Mozilla DOM
 Name:		perl-Mozilla-DOM
-Version:	0.20
+Version:	0.21
 Release:	1
-# note if it is "same as perl"
 License:	LGPL
 Group:		Development/Languages/Perl
 Source0:	http://www.cpan.org/modules/by-module/Mozilla/%{pdir}-%{pnam}-%{version}.tar.gz
-# Source0-md5:	e2b3cc11dba8b327f8df03908ceed3d4
+# Source0-md5:	949ce787aff8506b3cdaf0483f51a53c
 Patch0:		%{name}-xulrunner.patch
 Patch1:		%{name}-man.patch
 URL:		http://search.cpan.org/dist/Mozilla-DOM/
@@ -22,12 +21,11 @@ BuildRequires:	libstdc++-devel
 BuildRequires:	perl-ExtUtils-Depends >= 0.205
 BuildRequires:	perl-ExtUtils-PkgConfig >= 1.07
 BuildRequires:	perl-devel >= 1:5.8.0
+BuildRequires:	rpmbuild(macros) >= 1.167
 BuildRequires:	rpm-perlprov >= 4.1-13
-BuildRequires:	xulrunner-devel >= 1.8
+BuildRequires:	xulrunner-devel >= 1.9
 %requires_eq	xulrunner-libs
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
-
-%define		_noautoreq	libxpcom.so
 
 %description
 This module wraps the Mozilla DOM interface in Perl.
@@ -57,8 +55,8 @@ szczegółów w `perldoc Mozilla::DOM`.
 	INSTALLDIRS=vendor
 
 %{__make} \
-	CC="%{__cc}" \
-	OPTIMIZE="%{rpmcflags}"
+	CC="%{__cxx}" \
+	OPTIMIZE="%{rpmcxxflags}"
 
 %{?with_tests:%{__make} test}
 
