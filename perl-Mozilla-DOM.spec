@@ -6,14 +6,14 @@
 %define		pdir	Mozilla
 %define		pnam	DOM
 Summary:	Mozilla::DOM - Mozilla DOM interface wrapper for Perl
-Summary(pl.UTF-8):	Mozilla::DOM - perlowy wrapper interfejsu Mozilla DOM
+Summary(pl.UTF-8):	Mozilla::DOM - perlowe obudowanie interfejsu Mozilla DOM
 Name:		perl-Mozilla-DOM
-Version:	0.21
+Version:	0.23
 Release:	1
-License:	LGPL
+License:	LGPL v2.1+
 Group:		Development/Languages/Perl
-Source0:	http://www.cpan.org/modules/by-module/Mozilla/%{pdir}-%{pnam}-%{version}.tar.gz
-# Source0-md5:	949ce787aff8506b3cdaf0483f51a53c
+Source0:	http://www.cpan.org/modules/by-module/Mozilla/SLANNING/%{pdir}-%{pnam}-%{version}.tar.gz
+# Source0-md5:	8a066c3ccf418af44515975602cf1fab
 Patch0:		%{name}-xulrunner.patch
 Patch1:		%{name}-man.patch
 URL:		http://search.cpan.org/dist/Mozilla-DOM/
@@ -23,7 +23,7 @@ BuildRequires:	perl-ExtUtils-PkgConfig >= 1.07
 BuildRequires:	perl-devel >= 1:5.8.0
 BuildRequires:	rpmbuild(macros) >= 1.167
 BuildRequires:	rpm-perlprov >= 4.1-13
-BuildRequires:	xulrunner-devel >= 1.9
+BuildRequires:	xulrunner-devel >= 1.9.1
 %requires_eq	xulrunner-libs
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
@@ -51,7 +51,7 @@ szczegółów w `perldoc Mozilla::DOM`.
 %patch1 -p1
 
 %build
-%{__perl} Makefile.PL \
+echo | %{__perl} Makefile.PL \
 	INSTALLDIRS=vendor
 
 %{__make} \
@@ -66,7 +66,7 @@ rm -rf $RPM_BUILD_ROOT
 %{__make} pure_install \
 	DESTDIR=$RPM_BUILD_ROOT
 
-rm -f $RPM_BUILD_ROOT%{perl_vendorarch}/Mozilla/DOM/*.pod
+%{__rm} $RPM_BUILD_ROOT%{perl_vendorarch}/Mozilla/DOM/*.pod
 
 %clean
 rm -rf $RPM_BUILD_ROOT

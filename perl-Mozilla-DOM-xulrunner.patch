@@ -1,82 +1,84 @@
---- Mozilla-DOM-0.21/xs/DOM.xs.orig	2007-06-06 23:05:57.000000000 +0200
-+++ Mozilla-DOM-0.21/xs/DOM.xs	2008-07-22 07:56:56.908756844 +0200
-@@ -4351,39 +4351,6 @@ moz_dom_ComparePoint (nsrange, parent, o
+--- Mozilla-DOM-0.23/xs/DOM.xs.orig	2009-10-09 23:34:46.000000000 +0200
++++ Mozilla-DOM-0.23/xs/DOM.xs	2011-03-12 11:15:25.387412942 +0100
+@@ -6678,7 +6678,7 @@ moz_dom_GetScrollTop (nshtmlelement)
+     PREINIT:
+ 	PRInt32 aScrollTop;
+     CODE:
+-	nshtmlelement->GetScrollTop(&aScrollTop);
++	((nsIDOMNSElement*)nshtmlelement)->GetScrollTop(&aScrollTop);
+ 	RETVAL = aScrollTop;
      OUTPUT:
  	RETVAL
+@@ -6689,7 +6689,7 @@ moz_dom_SetScrollTop (nshtmlelement, aSc
+ 	nsIDOMNSHTMLElement *nshtmlelement;
+ 	PRInt32  aScrollTop;
+     CODE:
+-	nshtmlelement->SetScrollTop(aScrollTop);
++	((nsIDOMNSElement*)nshtmlelement)->SetScrollTop(aScrollTop);
  
--## IntersectsNode(nsIDOMNode *n, PRBool *_retval)
--PRBool
--moz_dom_IntersectsNode (nsrange, n)
--	nsIDOMNSRange *nsrange;
--	nsIDOMNode * n;
--    PREINIT:
--	PRBool _retval;
--    CODE:
--	nsrange->IntersectsNode(n, &_retval);
--	RETVAL = _retval;
--    OUTPUT:
--	RETVAL
--
--## CompareNode(nsIDOMNode *n, PRUint16 *_retval)
--PRUint16
--moz_dom_CompareNode (nsrange, n)
--	nsIDOMNSRange *nsrange;
--	nsIDOMNode * n;
--    PREINIT:
--	PRUint16 _retval;
--    CODE:
--	nsrange->CompareNode(n, &_retval);
--	RETVAL = _retval;
--    OUTPUT:
--	RETVAL
--
--## NSDetach(void)
--void
--moz_dom_NSDetach (nsrange)
--	nsIDOMNSRange *nsrange;
--    CODE:
--	nsrange->NSDetach();
--
- # -----------------------------------------------------------------------------
+ ## GetScrollLeft(PRInt32 *aScrollLeft)
+ PRInt32
+@@ -6698,7 +6698,7 @@ moz_dom_GetScrollLeft (nshtmlelement)
+     PREINIT:
+ 	PRInt32 aScrollLeft;
+     CODE:
+-	nshtmlelement->GetScrollLeft(&aScrollLeft);
++	((nsIDOMNSElement*)nshtmlelement)->GetScrollLeft(&aScrollLeft);
+ 	RETVAL = aScrollLeft;
+     OUTPUT:
+ 	RETVAL
+@@ -6709,7 +6709,7 @@ moz_dom_SetScrollLeft (nshtmlelement, aS
+ 	nsIDOMNSHTMLElement *nshtmlelement;
+ 	PRInt32  aScrollLeft;
+     CODE:
+-	nshtmlelement->SetScrollLeft(aScrollLeft);
++	((nsIDOMNSElement*)nshtmlelement)->SetScrollLeft(aScrollLeft);
  
- 
---- Mozilla-DOM-0.21/Makefile.PL.orig	2007-06-06 22:40:06.000000000 +0200
-+++ Mozilla-DOM-0.21/Makefile.PL	2008-07-22 19:20:43.000000000 +0200
-@@ -17,6 +17,7 @@
- my $mozpkg = 'mozilla-xpcom';
- my $ffpkg  = 'firefox-xpcom';
- my $mffpkg = 'mozilla-firefox-xpcom';
-+my $xulpkg = 'libxul';
- 
- our %build_reqs = (
-     'perl-ExtUtils-Depends'   => '0.205',
-@@ -24,6 +25,7 @@
-     $mozpkg                   => '1.7',
-     $ffpkg                    => '1.0',
-     $mffpkg                   => '1.0',
-+    $xulpkg                   => '1.9',
- );
- 
- unless (eval "use ExtUtils::Depends '$build_reqs{'perl-ExtUtils-Depends'}';"
-@@ -42,9 +44,10 @@
- 
- my %pkgcfg = ExtUtils::PkgConfig->find("$mozpkg >= " . $build_reqs{$mozpkg},
-                                        "$ffpkg >= " . $build_reqs{$ffpkg},
--                                       "$mffpkg >= " . $build_reqs{$mffpkg});
-+                                       "$mffpkg >= " . $build_reqs{$mffpkg},
-+                                       "$xulpkg >= " . $build_reqs{$xulpkg});
- 
--my ($pkg) = $pkgcfg{pkg} =~ /^(\S+-xpcom)/;
-+my ($pkg) = $pkgcfg{pkg} =~ /^(\S+)/;
- 
- mkdir 'build', 0777;
- 
-@@ -63,7 +66,7 @@
- # -I/usr/include/mozilla/string -I/usr/include/mozilla/nspr
- $mozdom->set_inc($pkgcfg{cflags}, '-I.', '-I./build',
-                  "-I$incdir", "-I$incdir/dom", "-I$incdir/webbrwsr",
--                 "-I$incdir/content", "-I$incdir/docshell");
-+                 "-I$incdir/content", "-I$incdir/docshell", "-I$incdir/necko", "-I$incdir/xpcom");
- # -L/usr/lib/mozilla -lxpcom -lplds4 -lplc4 -lnspr4 -ldl -lc -lpthread
- $mozdom->set_libs($pkgcfg{libs});
- 
+ ## GetScrollHeight(PRInt32 *aScrollHeight)
+ PRInt32
+@@ -6718,7 +6718,7 @@ moz_dom_GetScrollHeight (nshtmlelement)
+     PREINIT:
+ 	PRInt32 aScrollHeight;
+     CODE:
+-	nshtmlelement->GetScrollHeight(&aScrollHeight);
++	((nsIDOMNSElement*)nshtmlelement)->GetScrollHeight(&aScrollHeight);
+ 	RETVAL = aScrollHeight;
+     OUTPUT:
+ 	RETVAL
+@@ -6730,7 +6730,7 @@ moz_dom_GetScrollWidth (nshtmlelement)
+     PREINIT:
+ 	PRInt32 aScrollWidth;
+     CODE:
+-	nshtmlelement->GetScrollWidth(&aScrollWidth);
++	((nsIDOMNSElement*)nshtmlelement)->GetScrollWidth(&aScrollWidth);
+ 	RETVAL = aScrollWidth;
+     OUTPUT:
+ 	RETVAL
+@@ -6742,7 +6742,7 @@ moz_dom_GetClientHeight (nshtmlelement)
+     PREINIT:
+ 	PRInt32 aClientHeight;
+     CODE:
+-	nshtmlelement->GetClientHeight(&aClientHeight);
++	((nsIDOMNSElement*)nshtmlelement)->GetClientHeight(&aClientHeight);
+ 	RETVAL = aClientHeight;
+     OUTPUT:
+ 	RETVAL
+@@ -6754,7 +6754,7 @@ moz_dom_GetClientWidth (nshtmlelement)
+     PREINIT:
+ 	PRInt32 aClientWidth;
+     CODE:
+-	nshtmlelement->GetClientWidth(&aClientWidth);
++	((nsIDOMNSElement*)nshtmlelement)->GetClientWidth(&aClientWidth);
+ 	RETVAL = aClientWidth;
+     OUTPUT:
+ 	RETVAL
+--- Mozilla-DOM-0.23/mozilladom2perl.h.orig	2007-06-06 23:46:36.000000000 +0200
++++ Mozilla-DOM-0.23/mozilladom2perl.h	2011-03-12 11:24:13.839417132 +0100
+@@ -79,6 +79,7 @@ extern "C" {
+ #include "nsIDOMElement.h"
+ #include "nsIDOMEntity.h"
+ #include "nsIDOMEntityReference.h"
++#include "nsIDOMNSElement.h"
+ #include "nsIDOMNSEvent.h"
+ #include "nsIDOMEvent.h"
+ #include "nsIDOMEventListener.h"
