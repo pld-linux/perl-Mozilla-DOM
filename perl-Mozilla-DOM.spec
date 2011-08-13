@@ -9,7 +9,7 @@ Summary:	Mozilla::DOM - Mozilla DOM interface wrapper for Perl
 Summary(pl.UTF-8):	Mozilla::DOM - perlowe obudowanie interfejsu Mozilla DOM
 Name:		perl-Mozilla-DOM
 Version:	0.23
-Release:	1
+Release:	2
 License:	LGPL v2.1+
 Group:		Development/Languages/Perl
 Source0:	http://www.cpan.org/modules/by-module/Mozilla/SLANNING/%{pdir}-%{pnam}-%{version}.tar.gz
@@ -23,7 +23,7 @@ BuildRequires:	perl-ExtUtils-PkgConfig >= 1.07
 BuildRequires:	perl-devel >= 1:5.8.0
 BuildRequires:	rpmbuild(macros) >= 1.167
 BuildRequires:	rpm-perlprov >= 4.1-13
-BuildRequires:	xulrunner-devel >= 1.9.1
+BuildRequires:	xulrunner-devel >= 5.0
 %requires_eq	xulrunner-libs
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
@@ -56,6 +56,7 @@ echo | %{__perl} Makefile.PL \
 
 %{__make} \
 	CC="%{__cxx}" \
+	LDDLFLAGS="-shared %{rpmldflags} -Wl,-rpath,%{_libdir}/xulrunner" \
 	OPTIMIZE="%{rpmcxxflags}"
 
 %{?with_tests:%{__make} test}
