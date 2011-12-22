@@ -9,7 +9,7 @@ Summary:	Mozilla::DOM - Mozilla DOM interface wrapper for Perl
 Summary(pl.UTF-8):	Mozilla::DOM - perlowe obudowanie interfejsu Mozilla DOM
 Name:		perl-Mozilla-DOM
 Version:	0.23
-Release:	5
+Release:	6
 License:	LGPL v2.1+
 Group:		Development/Languages/Perl
 Source0:	http://www.cpan.org/modules/by-module/Mozilla/SLANNING/%{pdir}-%{pnam}-%{version}.tar.gz
