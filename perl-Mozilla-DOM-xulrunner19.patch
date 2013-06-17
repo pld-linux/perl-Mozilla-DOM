@@ -1,0 +1,2999 @@
+--- Mozilla-DOM-0.23/xs/DOM.xs.orig	2013-06-16 12:41:27.728745559 +0200
++++ Mozilla-DOM-0.23/xs/DOM.xs	2013-06-17 18:49:04.693151643 +0200
+@@ -30,36 +30,26 @@ MOZDOM_DEF_I_TYPEMAPPERS(URI)
+ MOZDOM_DEF_I_TYPEMAPPERS(Selection)
+ MOZDOM_DEF_I_TYPEMAPPERS(Supports)
+ 
+-MOZDOM_DEF_DOM_TYPEMAPPERS(AbstractView)
+-MOZDOM_DEF_DOM_TYPEMAPPERS(DocumentView)
+ MOZDOM_DEF_DOM_TYPEMAPPERS(Event)
+ MOZDOM_DEF_DOM_TYPEMAPPERS(NSEvent)
+ MOZDOM_DEF_DOM_TYPEMAPPERS(UIEvent)
+-MOZDOM_DEF_DOM_TYPEMAPPERS(NSUIEvent)
+-MOZDOM_DEF_DOM_TYPEMAPPERS(DocumentEvent)
+ MOZDOM_DEF_DOM_TYPEMAPPERS(MutationEvent)
+ MOZDOM_DEF_DOM_TYPEMAPPERS(KeyEvent)
+ MOZDOM_DEF_DOM_TYPEMAPPERS(MouseEvent)
+ MOZDOM_DEF_DOM_TYPEMAPPERS(EventTarget)
+ MOZDOM_DEF_DOM_TYPEMAPPERS(EventListener)
+ MOZDOM_DEF_DOM_TYPEMAPPERS(Window)
+-MOZDOM_DEF_DOM_TYPEMAPPERS(Window2)
+ MOZDOM_DEF_DOM_TYPEMAPPERS(WindowInternal)
+ MOZDOM_DEF_DOM_TYPEMAPPERS(WindowCollection)
+ MOZDOM_DEF_DOM_TYPEMAPPERS(Document)
+-MOZDOM_DEF_DOM_TYPEMAPPERS(NSDocument)
+ MOZDOM_DEF_DOM_TYPEMAPPERS(DocumentFragment)
+-MOZDOM_DEF_DOM_TYPEMAPPERS(DocumentRange)
+ MOZDOM_DEF_DOM_TYPEMAPPERS(DocumentType)
+ MOZDOM_DEF_DOM_TYPEMAPPERS(DOMException)
+ MOZDOM_DEF_DOM_TYPEMAPPERS(Node)
+ MOZDOM_DEF_DOM_TYPEMAPPERS(NodeList)
+ MOZDOM_DEF_DOM_TYPEMAPPERS(NamedNodeMap)
+ MOZDOM_DEF_DOM_TYPEMAPPERS(Element)
+-MOZDOM_DEF_DOM_TYPEMAPPERS(Entity)
+-MOZDOM_DEF_DOM_TYPEMAPPERS(EntityReference)
+ MOZDOM_DEF_DOM_TYPEMAPPERS(Attr)
+-MOZDOM_DEF_DOM_TYPEMAPPERS(Notation)
+ MOZDOM_DEF_DOM_TYPEMAPPERS(ProcessingInstruction)
+ MOZDOM_DEF_DOM_TYPEMAPPERS(CDATASection)
+ MOZDOM_DEF_DOM_TYPEMAPPERS(Comment)
+@@ -67,7 +57,6 @@ MOZDOM_DEF_DOM_TYPEMAPPERS(CharacterData
+ MOZDOM_DEF_DOM_TYPEMAPPERS(Text)
+ MOZDOM_DEF_DOM_TYPEMAPPERS(DOMImplementation)
+ MOZDOM_DEF_DOM_TYPEMAPPERS(Range)
+-MOZDOM_DEF_DOM_TYPEMAPPERS(NSRange)
+ MOZDOM_DEF_DOM_TYPEMAPPERS(History)
+ MOZDOM_DEF_DOM_TYPEMAPPERS(Location)
+ MOZDOM_DEF_DOM_TYPEMAPPERS(Navigator)
+@@ -84,26 +73,20 @@ MOZDOM_DEF_DOM_TYPEMAPPERS(HTMLCollectio
+ MOZDOM_DEF_DOM_TYPEMAPPERS(HTMLDListElement)
+ MOZDOM_DEF_DOM_TYPEMAPPERS(HTMLDirectoryElement)
+ MOZDOM_DEF_DOM_TYPEMAPPERS(HTMLDivElement)
+-MOZDOM_DEF_DOM_TYPEMAPPERS(NSHTMLDocument)
+ MOZDOM_DEF_DOM_TYPEMAPPERS(HTMLElement)
+-MOZDOM_DEF_DOM_TYPEMAPPERS(NSHTMLElement)
+ MOZDOM_DEF_DOM_TYPEMAPPERS(HTMLEmbedElement)
+ MOZDOM_DEF_DOM_TYPEMAPPERS(HTMLFieldSetElement)
+ MOZDOM_DEF_DOM_TYPEMAPPERS(HTMLFontElement)
+ MOZDOM_DEF_DOM_TYPEMAPPERS(HTMLFormElement)
+-MOZDOM_DEF_DOM_TYPEMAPPERS(NSHTMLFormElement)
+ MOZDOM_DEF_DOM_TYPEMAPPERS(HTMLFrameElement)
+-MOZDOM_DEF_DOM_TYPEMAPPERS(NSHTMLFrameElement)
+ MOZDOM_DEF_DOM_TYPEMAPPERS(HTMLFrameSetElement)
+ MOZDOM_DEF_DOM_TYPEMAPPERS(HTMLHRElement)
+-MOZDOM_DEF_DOM_TYPEMAPPERS(NSHTMLHRElement)
+ MOZDOM_DEF_DOM_TYPEMAPPERS(HTMLHeadElement)
+ MOZDOM_DEF_DOM_TYPEMAPPERS(HTMLHeadingElement)
+ MOZDOM_DEF_DOM_TYPEMAPPERS(HTMLHtmlElement)
+ MOZDOM_DEF_DOM_TYPEMAPPERS(HTMLIFrameElement)
+ MOZDOM_DEF_DOM_TYPEMAPPERS(HTMLImageElement)
+ MOZDOM_DEF_DOM_TYPEMAPPERS(HTMLInputElement)
+-MOZDOM_DEF_DOM_TYPEMAPPERS(HTMLIsIndexElement)
+ MOZDOM_DEF_DOM_TYPEMAPPERS(HTMLLIElement)
+ MOZDOM_DEF_DOM_TYPEMAPPERS(HTMLLabelElement)
+ MOZDOM_DEF_DOM_TYPEMAPPERS(HTMLLegendElement)
+@@ -131,7 +114,6 @@ MOZDOM_DEF_DOM_TYPEMAPPERS(HTMLTableElem
+ MOZDOM_DEF_DOM_TYPEMAPPERS(HTMLTableRowElement)
+ MOZDOM_DEF_DOM_TYPEMAPPERS(HTMLTableSectionElement)
+ MOZDOM_DEF_DOM_TYPEMAPPERS(HTMLTextAreaElement)
+-MOZDOM_DEF_DOM_TYPEMAPPERS(NSHTMLTextAreaElement)
+ MOZDOM_DEF_DOM_TYPEMAPPERS(HTMLTitleElement)
+ MOZDOM_DEF_DOM_TYPEMAPPERS(HTMLUListElement)
+ 
+@@ -184,60 +166,6 @@ NS_IMETHODIMP MozDomEventListener::Handl
+ 
+ /* ------------------------------------------------------------------------- */
+ 
+-MODULE = Mozilla::DOM	PACKAGE = Mozilla::DOM::AbstractView	PREFIX = moz_dom_
+-
+-# /usr/include/mozilla/nsIDOMAbstractView.h
+-
+-## NS_DEFINE_STATIC_IID_ACCESSOR(NS_IDOMABSTRACTVIEW_IID)
+-static nsIID
+-nsIDOMAbstractView::GetIID()
+-    CODE:
+-	const nsIID &id = nsIDOMAbstractView::GetIID();
+-	RETVAL = (nsIID) id;
+-    OUTPUT:
+-	RETVAL
+-
+-## GetDocument(nsIDOMDocumentView * *aDocument)
+-nsIDOMDocumentView *
+-moz_dom_GetDocument (view)
+-	nsIDOMAbstractView *view;
+-    PREINIT:
+-	nsIDOMDocumentView *docview;
+-    CODE:
+-	view->GetDocument(&docview);
+-	RETVAL = docview;
+-    OUTPUT:
+-	RETVAL
+-
+-# -----------------------------------------------------------------------------
+-
+-MODULE = Mozilla::DOM	PACKAGE = Mozilla::DOM::DocumentView	PREFIX = moz_dom_
+-
+-# /usr/include/mozilla/nsIDOMDocumentView.h
+-
+-## NS_DEFINE_STATIC_IID_ACCESSOR(NS_IDOMDOCUMENTVIEW_IID)
+-static nsIID
+-nsIDOMDocumentView::GetIID()
+-    CODE:
+-	const nsIID &id = nsIDOMDocumentView::GetIID();
+-	RETVAL = (nsIID) id;
+-    OUTPUT:
+-	RETVAL
+-
+-## GetDefaultView(nsIDOMAbstractView * *aDefaultView);
+-nsIDOMAbstractView *
+-moz_dom_GetDefaultView (docview)
+-	nsIDOMDocumentView *docview;
+-    PREINIT:
+-	nsIDOMAbstractView *view;
+-    CODE:
+-	docview->GetDefaultView(&view);
+-	RETVAL = view;
+-    OUTPUT:
+-	RETVAL
+-
+-# -----------------------------------------------------------------------------
+-
+ MODULE = Mozilla::DOM	PACKAGE = Mozilla::DOM::Event	PREFIX = moz_dom_
+ 
+ # /usr/include/mozilla/nsIDOMEvent.h
+@@ -300,7 +228,7 @@ moz_dom_GetBubbles (event)
+     ALIAS:
+ 	Mozilla::DOM::Event::GetCancelable = 1
+     PREINIT:
+-	PRBool can;
++	bool can;
+     CODE:
+ 	switch (ix) {
+ 		case 0: event->GetBubbles(&can); break;
+@@ -347,25 +275,10 @@ moz_dom_InitEvent (event, eventtype, can
+ 	/* XXX: this can throw an exception, so should check... */
+ 	event->InitEvent(eventtype, canbubble, cancelable);
+ 
+-# -----------------------------------------------------------------------------
+-
+-MODULE = Mozilla::DOM	PACKAGE = Mozilla::DOM::NSEvent	PREFIX = moz_dom_
+-
+-# /usr/include/mozilla/dom/nsIDOMNSEvent.h
+-
+-## NS_DEFINE_STATIC_IID_ACCESSOR(NS_IDOMNSEVENT_IID)
+-static nsIID
+-nsIDOMNSEvent::GetIID()
+-    CODE:
+-	const nsIID &id = nsIDOMNSEvent::GetIID();
+-	RETVAL = (nsIID) id;
+-    OUTPUT:
+-	RETVAL
+-
+ ## GetOriginalTarget(nsIDOMEventTarget * *aOriginalTarget)
+ nsIDOMEventTarget *
+ moz_dom_GetOriginalTarget (nsevent)
+-	nsIDOMNSEvent *nsevent;
++	nsIDOMEvent *nsevent;
+     PREINIT:
+ 	nsIDOMEventTarget * aOriginalTarget;
+     CODE:
+@@ -377,7 +290,7 @@ moz_dom_GetOriginalTarget (nsevent)
+ ## GetExplicitOriginalTarget(nsIDOMEventTarget * *aExplicitOriginalTarget)
+ nsIDOMEventTarget *
+ moz_dom_GetExplicitOriginalTarget (nsevent)
+-	nsIDOMNSEvent *nsevent;
++	nsIDOMEvent *nsevent;
+     PREINIT:
+ 	nsIDOMEventTarget * aExplicitOriginalTarget;
+     CODE:
+@@ -386,38 +299,26 @@ moz_dom_GetExplicitOriginalTarget (nseve
+     OUTPUT:
+ 	RETVAL
+ 
+-## GetTmpRealOriginalTarget(nsIDOMEventTarget * *aTmpRealOriginalTarget)
+-nsIDOMEventTarget *
+-moz_dom_GetTmpRealOriginalTarget (nsevent)
+-	nsIDOMNSEvent *nsevent;
+-    PREINIT:
+-	nsIDOMEventTarget * aTmpRealOriginalTarget;
+-    CODE:
+-	nsevent->GetTmpRealOriginalTarget(&aTmpRealOriginalTarget);
+-	RETVAL = aTmpRealOriginalTarget;
+-    OUTPUT:
+-	RETVAL
+-
+ ## PreventBubble(void)
+ void
+ moz_dom_PreventBubble (nsevent)
+-	nsIDOMNSEvent *nsevent;
++	nsIDOMEvent *nsevent;
+     CODE:
+ 	nsevent->PreventBubble();
+ 
+ ## PreventCapture(void)
+ void
+ moz_dom_PreventCapture (nsevent)
+-	nsIDOMNSEvent *nsevent;
++	nsIDOMEvent *nsevent;
+     CODE:
+ 	nsevent->PreventCapture();
+ 
+ ## GetIsTrusted(PRBool *aIsTrusted)
+ PRBool
+ moz_dom_GetIsTrusted (nsevent)
+-	nsIDOMNSEvent *nsevent;
++	nsIDOMEvent *nsevent;
+     PREINIT:
+-	PRBool aIsTrusted;
++	bool aIsTrusted;
+     CODE:
+ 	nsevent->GetIsTrusted(&aIsTrusted);
+ 	RETVAL = aIsTrusted;
+@@ -426,6 +327,21 @@ moz_dom_GetIsTrusted (nsevent)
+ 
+ # -----------------------------------------------------------------------------
+ 
++MODULE = Mozilla::DOM	PACKAGE = Mozilla::DOM::NSEvent	PREFIX = moz_dom_
++
++# /usr/include/mozilla/dom/nsIDOMNSEvent.h
++
++## NS_DEFINE_STATIC_IID_ACCESSOR(NS_IDOMNSEVENT_IID)
++static nsIID
++nsIDOMNSEvent::GetIID()
++    CODE:
++	const nsIID &id = nsIDOMNSEvent::GetIID();
++	RETVAL = (nsIID) id;
++    OUTPUT:
++	RETVAL
++
++# -----------------------------------------------------------------------------
++
+ MODULE = Mozilla::DOM	PACKAGE = Mozilla::DOM::UIEvent	PREFIX = moz_dom_
+ 
+ # /usr/include/mozilla/nsIDOMUIEvent.h
+@@ -451,18 +367,6 @@ moz_dom_GetDetail (event)
+     OUTPUT:
+ 	RETVAL
+ 
+-## GetView(nsIDOMAbstractView * *aView)
+-nsIDOMAbstractView *
+-moz_dom_GetView (event)
+-	nsIDOMUIEvent *event;
+-    PREINIT:
+-	nsIDOMAbstractView *view;
+-    CODE:
+-	event->GetView(&view);
+-	RETVAL = view;
+-    OUTPUT:
+-	RETVAL
+-
+ ## InitUIEvent(const nsAString & typeArg, PRBool canBubbleArg, PRBool cancelableArg, nsIDOMAbstractView *viewArg, PRInt32 detailArg)
+ void
+ moz_dom_InitUIEvent (event, eventtype, canbubble, cancelable, detail)
+@@ -472,179 +376,7 @@ moz_dom_InitUIEvent (event, eventtype, c
+ 	PRBool cancelable;
+ 	PRInt32 detail;
+     CODE:
+-	event->InitUIEvent(eventtype, canbubble, cancelable, nsnull, detail);
+-
+-# -----------------------------------------------------------------------------
+-
+-MODULE = Mozilla::DOM	PACKAGE = Mozilla::DOM::NSUIEvent	PREFIX = moz_dom_
+-
+-# /usr/include/mozilla/dom/nsIDOMNSUIEvent.h
+-
+-## NS_DEFINE_STATIC_IID_ACCESSOR(NS_IDOMNSUIEVENT_IID)
+-static nsIID
+-nsIDOMNSUIEvent::GetIID()
+-    CODE:
+-	const nsIID &id = nsIDOMNSUIEvent::GetIID();
+-	RETVAL = (nsIID) id;
+-    OUTPUT:
+-	RETVAL
+-
+-## GetPreventDefault(PRBool *_retval)
+-PRBool
+-moz_dom_GetPreventDefault (nsuievent)
+-	nsIDOMNSUIEvent *nsuievent;
+-    PREINIT:
+-	PRBool _retval;
+-    CODE:
+-	nsuievent->GetPreventDefault(&_retval);
+-	RETVAL = _retval;
+-    OUTPUT:
+-	RETVAL
+-
+-## GetLayerX(PRInt32 *aLayerX)
+-PRInt32
+-moz_dom_GetLayerX (nsuievent)
+-	nsIDOMNSUIEvent *nsuievent;
+-    PREINIT:
+-	PRInt32 aLayerX;
+-    CODE:
+-	nsuievent->GetLayerX(&aLayerX);
+-	RETVAL = aLayerX;
+-    OUTPUT:
+-	RETVAL
+-
+-## GetLayerY(PRInt32 *aLayerY)
+-PRInt32
+-moz_dom_GetLayerY (nsuievent)
+-	nsIDOMNSUIEvent *nsuievent;
+-    PREINIT:
+-	PRInt32 aLayerY;
+-    CODE:
+-	nsuievent->GetLayerY(&aLayerY);
+-	RETVAL = aLayerY;
+-    OUTPUT:
+-	RETVAL
+-
+-## GetPageX(PRInt32 *aPageX)
+-PRInt32
+-moz_dom_GetPageX (nsuievent)
+-	nsIDOMNSUIEvent *nsuievent;
+-    PREINIT:
+-	PRInt32 aPageX;
+-    CODE:
+-	nsuievent->GetPageX(&aPageX);
+-	RETVAL = aPageX;
+-    OUTPUT:
+-	RETVAL
+-
+-## GetPageY(PRInt32 *aPageY)
+-PRInt32
+-moz_dom_GetPageY (nsuievent)
+-	nsIDOMNSUIEvent *nsuievent;
+-    PREINIT:
+-	PRInt32 aPageY;
+-    CODE:
+-	nsuievent->GetPageY(&aPageY);
+-	RETVAL = aPageY;
+-    OUTPUT:
+-	RETVAL
+-
+-## GetWhich(PRUint32 *aWhich)
+-PRUint32
+-moz_dom_GetWhich (nsuievent)
+-	nsIDOMNSUIEvent *nsuievent;
+-    PREINIT:
+-	PRUint32 aWhich;
+-    CODE:
+-	nsuievent->GetWhich(&aWhich);
+-	RETVAL = aWhich;
+-    OUTPUT:
+-	RETVAL
+-
+-## GetRangeParent(nsIDOMNode * *aRangeParent)
+-nsIDOMNode *
+-moz_dom_GetRangeParent (nsuievent)
+-	nsIDOMNSUIEvent *nsuievent;
+-    PREINIT:
+-	nsIDOMNode * aRangeParent;
+-    CODE:
+-	nsuievent->GetRangeParent(&aRangeParent);
+-	RETVAL = aRangeParent;
+-    OUTPUT:
+-	RETVAL
+-
+-## GetRangeOffset(PRInt32 *aRangeOffset)
+-PRInt32
+-moz_dom_GetRangeOffset (nsuievent)
+-	nsIDOMNSUIEvent *nsuievent;
+-    PREINIT:
+-	PRInt32 aRangeOffset;
+-    CODE:
+-	nsuievent->GetRangeOffset(&aRangeOffset);
+-	RETVAL = aRangeOffset;
+-    OUTPUT:
+-	RETVAL
+-
+-## GetCancelBubble(PRBool *aCancelBubble)
+-PRBool
+-moz_dom_GetCancelBubble (nsuievent)
+-	nsIDOMNSUIEvent *nsuievent;
+-    PREINIT:
+-	PRBool aCancelBubble;
+-    CODE:
+-	nsuievent->GetCancelBubble(&aCancelBubble);
+-	RETVAL = aCancelBubble;
+-    OUTPUT:
+-	RETVAL
+-
+-## SetCancelBubble(PRBool aCancelBubble)
+-void
+-moz_dom_SetCancelBubble (nsuievent, aCancelBubble)
+-	nsIDOMNSUIEvent *nsuievent;
+-	PRBool  aCancelBubble;
+-    CODE:
+-	nsuievent->SetCancelBubble(aCancelBubble);
+-
+-## GetIsChar(PRBool *aIsChar)
+-PRBool
+-moz_dom_GetIsChar (nsuievent)
+-	nsIDOMNSUIEvent *nsuievent;
+-    PREINIT:
+-	PRBool aIsChar;
+-    CODE:
+-	nsuievent->GetIsChar(&aIsChar);
+-	RETVAL = aIsChar;
+-    OUTPUT:
+-	RETVAL
+-
+-# -----------------------------------------------------------------------------
+-
+-MODULE = Mozilla::DOM	PACKAGE = Mozilla::DOM::DocumentEvent	PREFIX = moz_dom_
+-
+-# /usr/include/mozilla/nsIDOMDocumentEvent.h
+-
+-## NS_DEFINE_STATIC_IID_ACCESSOR(NS_IDOMDOCUMENTEVENT_IID)
+-static nsIID
+-nsIDOMDocumentEvent::GetIID()
+-    CODE:
+-	const nsIID &id = nsIDOMDocumentEvent::GetIID();
+-	RETVAL = (nsIID) id;
+-    OUTPUT:
+-	RETVAL
+-
+-## CreateEvent(const nsAString & eventType, nsIDOMEvent **_retval)
+-nsIDOMEvent *
+-moz_dom_CreateEvent (docevent, eventtype)
+-	nsIDOMDocumentEvent *docevent;
+-	nsEmbedString eventtype;
+-    PREINIT:
+-	nsIDOMEvent *event;
+-    CODE:
+-	/* XXX: this can throw an exception, so should check... */
+-	docevent->CreateEvent(eventtype, &event);
+-	RETVAL = event;
+-    OUTPUT:
+-	RETVAL
++	event->InitUIEvent(eventtype, canbubble, cancelable, NULL, detail);
+ 
+ # -----------------------------------------------------------------------------
+ 
+@@ -692,7 +424,7 @@ moz_dom_GetCtrlKey (event)
+ 	Mozilla::DOM::MouseEvent::GetAltKey = 2
+ 	Mozilla::DOM::MouseEvent::GetMetaKey = 3
+     PREINIT:
+-	PRBool key;
++	bool key;
+     CODE:
+ 	switch (ix) {
+ 		case 0: event->GetCtrlKey(&key); break;
+@@ -748,7 +480,7 @@ moz_dom_InitMouseEvent (event, eventtype
+ 	PRUint16 button;
+ 	nsIDOMEventTarget *target;
+     CODE:
+-	event->InitMouseEvent(eventtype, canbubble, cancelable, nsnull, detail,
++	event->InitMouseEvent(eventtype, canbubble, cancelable, NULL, detail,
+ 			      screenx, screeny, clientx, clienty,
+ 			      ctrlkey, altkey, shiftkey, metakey,
+  			      button, target);
+@@ -795,7 +527,7 @@ moz_dom_GetCtrlKey (event)
+ 	Mozilla::DOM::KeyEvent::GetAltKey = 2
+ 	Mozilla::DOM::KeyEvent::GetMetaKey = 3
+     PREINIT:
+-	PRBool key;
++	bool key;
+     CODE:
+ 	switch (ix) {
+ 		case 0: event->GetCtrlKey(&key); break;
+@@ -822,7 +554,7 @@ moz_dom_InitKeyEvent (event, eventtype,
+ 	PRUint32 keycode;
+ 	PRUint32 charcode;
+     CODE:
+-	event->InitKeyEvent(eventtype, canbubble, cancelable, nsnull,
++	event->InitKeyEvent(eventtype, canbubble, cancelable, NULL,
+ 			    ctrlkey, altkey, shiftkey, metakey,
+  			    keycode, charcode);
+ 
+@@ -969,7 +701,7 @@ moz_dom_DispatchEvent (target, event)
+ 	nsIDOMEventTarget *target;
+ 	nsIDOMEvent *event;
+     PREINIT:
+-	PRBool rv;
++	bool rv;
+     CODE:
+ 	target->DispatchEvent(event, &rv);
+ 	RETVAL = rv;
+@@ -1225,33 +957,6 @@ moz_dom_ScrollByPages (window, numPages)
+ 
+ # -----------------------------------------------------------------------------
+ 
+-MODULE = Mozilla::DOM	PACKAGE = Mozilla::DOM::Window2	PREFIX = moz_dom_
+-
+-# /usr/include/mozilla/nsIDOMWindow2.h
+-
+-## NS_DEFINE_STATIC_IID_ACCESSOR(NS_IDOMWINDOW2_IID)
+-static nsIID
+-nsIDOMWindow2::GetIID()
+-    CODE:
+-	const nsIID &id = nsIDOMWindow2::GetIID();
+-	RETVAL = (nsIID) id;
+-    OUTPUT:
+-	RETVAL
+-
+-## GetWindowRoot(nsIDOMEventTarget * *aWindowRoot)
+-nsIDOMEventTarget *
+-moz_dom_GetWindowRoot (window2)
+-	nsIDOMWindow2 *window2;
+-    PREINIT:
+-	nsIDOMEventTarget * aWindowRoot;
+-    CODE:
+-	window2->GetWindowRoot(&aWindowRoot);
+-	RETVAL = aWindowRoot;
+-    OUTPUT:
+-	RETVAL
+-
+-# -----------------------------------------------------------------------------
+-
+ MODULE = Mozilla::DOM	PACKAGE = Mozilla::DOM::WindowInternal	PREFIX = moz_dom_
+ 
+ # /usr/include/mozilla/dom/nsIDOMWindowInternal.h
+@@ -1266,11 +971,11 @@ nsIDOMWindowInternal::GetIID()
+ 	RETVAL
+ 
+ ## GetWindow(nsIDOMWindowInternal * *aWindow)
+-nsIDOMWindowInternal *
++nsIDOMWindow *
+ moz_dom_GetWindow (windowinternal)
+ 	nsIDOMWindowInternal *windowinternal;
+     PREINIT:
+-	nsIDOMWindowInternal * aWindow;
++	nsIDOMWindow * aWindow;
+     CODE:
+ 	windowinternal->GetWindow(&aWindow);
+ 	RETVAL = aWindow;
+@@ -1278,11 +983,11 @@ moz_dom_GetWindow (windowinternal)
+ 	RETVAL
+ 
+ ## GetSelf(nsIDOMWindowInternal * *aSelf)
+-nsIDOMWindowInternal *
++nsIDOMWindow *
+ moz_dom_GetSelf (windowinternal)
+ 	nsIDOMWindowInternal *windowinternal;
+     PREINIT:
+-	nsIDOMWindowInternal * aSelf;
++	nsIDOMWindow * aSelf;
+     CODE:
+ 	windowinternal->GetSelf(&aSelf);
+ 	RETVAL = aSelf;
+@@ -1482,7 +1187,7 @@ PRBool
+ moz_dom_GetClosed (windowinternal)
+ 	nsIDOMWindowInternal *windowinternal;
+     PREINIT:
+-	PRBool aClosed;
++	bool aClosed;
+     CODE:
+ 	windowinternal->GetClosed(&aClosed);
+ 	RETVAL = aClosed;
+@@ -1550,11 +1255,11 @@ moz_dom_GetClosed (windowinternal)
+ #	RETVAL
+ 
+ ## GetOpener(nsIDOMWindowInternal * *aOpener)
+-nsIDOMWindowInternal *
++nsIDOMWindow *
+ moz_dom_GetOpener (windowinternal)
+ 	nsIDOMWindowInternal *windowinternal;
+     PREINIT:
+-	nsIDOMWindowInternal * aOpener;
++	nsIDOMWindow * aOpener;
+     CODE:
+ 	windowinternal->GetOpener(&aOpener);
+ 	RETVAL = aOpener;
+@@ -1806,7 +1511,7 @@ PRBool
+ moz_dom_GetFullScreen (windowinternal)
+ 	nsIDOMWindowInternal *windowinternal;
+     PREINIT:
+-	PRBool aFullScreen;
++	bool aFullScreen;
+     CODE:
+ 	windowinternal->GetFullScreen(&aFullScreen);
+ 	RETVAL = aFullScreen;
+@@ -1835,7 +1540,7 @@ moz_dom_Confirm (windowinternal, text)
+ 	nsIDOMWindowInternal *windowinternal;
+ 	nsEmbedString text;
+     PREINIT:
+-	PRBool _retval;
++	bool _retval;
+     CODE:
+ 	windowinternal->Confirm(text, &_retval);
+ 	RETVAL = _retval;
+@@ -2001,14 +1706,14 @@ PRBool
+ moz_dom_Find (windowinternal, str, caseSensitive, backwards, wrapAround, wholeWord, searchInFrames, showDialog)
+ 	nsIDOMWindowInternal *windowinternal;
+ 	nsEmbedString str;
+-	PRBool  caseSensitive;
+-	PRBool  backwards;
+-	PRBool  wrapAround;
+-	PRBool  wholeWord;
+-	PRBool  searchInFrames;
+-	PRBool  showDialog;
++	bool  caseSensitive;
++	bool  backwards;
++	bool  wrapAround;
++	bool  wholeWord;
++	bool  searchInFrames;
++	bool  showDialog;
+     PREINIT:
+-	PRBool _retval;
++	bool _retval;
+     CODE:
+ 	windowinternal->Find(str, caseSensitive, backwards, wrapAround, wholeWord, searchInFrames, showDialog, &_retval);
+ 	RETVAL = _retval;
+@@ -2324,7 +2029,7 @@ PRBool
+ moz_dom_HasChildNodes (node)
+ 	nsIDOMNode *node;
+     PREINIT:
+-	PRBool has;
++	bool has;
+     CODE:
+ 	node->HasChildNodes(&has);
+ 	RETVAL = has;
+@@ -2335,11 +2040,11 @@ moz_dom_HasChildNodes (node)
+ nsIDOMNode *
+ moz_dom_CloneNode (node, deep)
+ 	nsIDOMNode *node;
+-	PRBool deep;
++	bool deep;
+     PREINIT:
+ 	nsIDOMNode *clone;
+     CODE:
+-	node->CloneNode(deep, &clone);
++	node->CloneNode(deep, 0, &clone);
+ 	RETVAL = clone;
+     OUTPUT:
+ 	RETVAL
+@@ -2358,7 +2063,7 @@ moz_dom_IsSupported (node, feature, vers
+ 	nsEmbedString feature;
+ 	nsEmbedString version;
+     PREINIT:
+-	PRBool is;
++	bool is;
+     CODE:
+ 	node->IsSupported(feature, version, &is);
+ 	RETVAL = is;
+@@ -2406,7 +2111,7 @@ PRBool
+ moz_dom_HasAttributes (node)
+ 	nsIDOMNode *node;
+     PREINIT:
+-	PRBool has;
++	bool has;
+     CODE:
+ 	node->HasAttributes(&has);
+ 	RETVAL = has;
+@@ -2723,20 +2428,6 @@ moz_dom_CreateAttribute (document, name)
+     OUTPUT:
+ 	RETVAL
+ 
+-## CreateEntityReference(const nsAString & name, nsIDOMEntityReference **_retval)
+-nsIDOMEntityReference *
+-moz_dom_CreateEntityReference (document, name)
+-	nsIDOMDocument *document;
+-	nsEmbedString name;
+-    PREINIT:
+-	nsIDOMEntityReference *node;
+-    CODE:
+-	/* raises (DOMException) */
+-	document->CreateEntityReference(name, &node);
+-	RETVAL = node;
+-    OUTPUT:
+-	RETVAL
+-
+ ## GetElementsByTagName(const nsAString & tagname, nsIDOMNodeList **_retval)
+ nsIDOMNodeList *
+ moz_dom_GetElementsByTagName_nodelist (document, tagname)
+@@ -2755,12 +2446,12 @@ nsIDOMNode *
+ moz_dom_ImportNode (document, importedNode, deep)
+ 	nsIDOMDocument *document;
+ 	nsIDOMNode *importedNode;
+-	PRBool deep;
++	bool deep;
+     PREINIT:
+ 	nsIDOMNode *node;
+     CODE:
+ 	/* raises (DOMException) */
+-	document->ImportNode(importedNode, deep, &node);
++	document->ImportNode(importedNode, deep, 0, &node);
+ 	RETVAL = node;
+     OUTPUT:
+ 	RETVAL
+@@ -2824,224 +2515,87 @@ moz_dom_GetElementById (document, elemen
+ 
+ # -----------------------------------------------------------------------------
+ 
+-MODULE = Mozilla::DOM	PACKAGE = Mozilla::DOM::NSDocument	PREFIX = moz_dom_
++MODULE = Mozilla::DOM	PACKAGE = Mozilla::DOM::Element	PREFIX = moz_dom_
+ 
+-# /usr/include/mozilla/dom/nsIDOMNSDocument.h
++# /usr/include/mozilla/nsIDOMElement.h
+ 
+-## NS_DEFINE_STATIC_IID_ACCESSOR(NS_IDOMNSDOCUMENT_IID)
++## NS_DEFINE_STATIC_IID_ACCESSOR(NS_IDOMELEMENT_IID)
+ static nsIID
+-nsIDOMNSDocument::GetIID()
++nsIDOMElement::GetIID()
+     CODE:
+-	const nsIID &id = nsIDOMNSDocument::GetIID();
++	const nsIID &id = nsIDOMElement::GetIID();
+ 	RETVAL = (nsIID) id;
+     OUTPUT:
+ 	RETVAL
+ 
+-## GetCharacterSet(nsAString & aCharacterSet)
++## GetTagName(nsAString & aTagName)
+ nsEmbedString
+-moz_dom_GetCharacterSet (nsdocument)
+-	nsIDOMNSDocument *nsdocument;
++moz_dom_GetTagName (element)
++	nsIDOMElement *element;
+     PREINIT:
+-	nsEmbedString aCharacterSet;
++	nsEmbedString tagname;
+     CODE:
+-	nsdocument->GetCharacterSet(aCharacterSet);
+-	RETVAL = aCharacterSet;
++	element->GetTagName(tagname);
++	RETVAL = tagname;
+     OUTPUT:
+ 	RETVAL
+ 
+-## GetDir(nsAString & aDir)
++## GetAttribute(const nsAString & name, nsAString & _retval)
+ nsEmbedString
+-moz_dom_GetDir (nsdocument)
+-	nsIDOMNSDocument *nsdocument;
++moz_dom_GetAttribute (element, name)
++	nsIDOMElement *element;
++	nsEmbedString name;
+     PREINIT:
+-	nsEmbedString aDir;
++	nsEmbedString attr;
+     CODE:
+-	nsdocument->GetDir(aDir);
+-	RETVAL = aDir;
++	element->GetAttribute(name, attr);
++	RETVAL = attr;
+     OUTPUT:
+ 	RETVAL
+ 
+-## SetDir(const nsAString & aDir)
++## SetAttribute(const nsAString & name, const nsAString & value)
+ void
+-moz_dom_SetDir (nsdocument, aDir)
+-	nsIDOMNSDocument *nsdocument;
+-	nsEmbedString aDir;
++moz_dom_SetAttribute (element, name, value)
++	nsIDOMElement *element;
++	nsEmbedString name;
++	nsEmbedString value;
+     CODE:
+-	nsdocument->SetDir(aDir);
++	/* raises (DOMException) */
++	element->SetAttribute(name, value);
+ 
+-## GetLocation(nsIDOMLocation * *aLocation)
+-nsIDOMLocation *
+-moz_dom_GetLocation (nsdocument)
+-	nsIDOMNSDocument *nsdocument;
++## RemoveAttribute(const nsAString & name)
++void
++moz_dom_RemoveAttribute (element, name)
++	nsIDOMElement *element;
++	nsEmbedString name;
++    CODE:
++	/* raises (DOMException) */
++	element->RemoveAttribute(name);
++
++## GetAttributeNode(const nsAString & name, nsIDOMAttr **_retval)
++nsIDOMAttr *
++moz_dom_GetAttributeNode (element, name)
++	nsIDOMElement *element;
++	nsEmbedString name;
+     PREINIT:
+-	nsIDOMLocation * aLocation;
++	nsIDOMAttr *attrnode;
+     CODE:
+-	nsdocument->GetLocation(&aLocation);
+-	RETVAL = aLocation;
++	element->GetAttributeNode(name, &attrnode);
++	RETVAL = attrnode;
+     OUTPUT:
+ 	RETVAL
+ 
+-## GetTitle(nsAString & aTitle)
+-nsEmbedString
+-moz_dom_GetTitle (nsdocument)
+-	nsIDOMNSDocument *nsdocument;
++## SetAttributeNode(nsIDOMAttr *newAttr, nsIDOMAttr **_retval)
++nsIDOMAttr *
++moz_dom_SetAttributeNode (element, newAttr)
++	nsIDOMElement *element;
++	nsIDOMAttr *newAttr;
+     PREINIT:
+-	nsEmbedString aTitle;
++	nsIDOMAttr *attrnode;
+     CODE:
+-	nsdocument->GetTitle(aTitle);
+-	RETVAL = aTitle;
+-    OUTPUT:
+-	RETVAL
+-
+-## SetTitle(const nsAString & aTitle)
+-void
+-moz_dom_SetTitle (nsdocument, aTitle)
+-	nsIDOMNSDocument *nsdocument;
+-	nsEmbedString aTitle;
+-    CODE:
+-	nsdocument->SetTitle(aTitle);
+-
+-## GetContentType(nsAString & aContentType)
+-nsEmbedString
+-moz_dom_GetContentType (nsdocument)
+-	nsIDOMNSDocument *nsdocument;
+-    PREINIT:
+-	nsEmbedString aContentType;
+-    CODE:
+-	nsdocument->GetContentType(aContentType);
+-	RETVAL = aContentType;
+-    OUTPUT:
+-	RETVAL
+-
+-## GetLastModified(nsAString & aLastModified)
+-nsEmbedString
+-moz_dom_GetLastModified (nsdocument)
+-	nsIDOMNSDocument *nsdocument;
+-    PREINIT:
+-	nsEmbedString aLastModified;
+-    CODE:
+-	nsdocument->GetLastModified(aLastModified);
+-	RETVAL = aLastModified;
+-    OUTPUT:
+-	RETVAL
+-
+-## GetReferrer(nsAString & aReferrer)
+-nsEmbedString
+-moz_dom_GetReferrer (nsdocument)
+-	nsIDOMNSDocument *nsdocument;
+-    PREINIT:
+-	nsEmbedString aReferrer;
+-    CODE:
+-	nsdocument->GetReferrer(aReferrer);
+-	RETVAL = aReferrer;
+-    OUTPUT:
+-	RETVAL
+-
+-### GetBoxObjectFor(nsIDOMElement *elt, nsIBoxObject **_retval)
+-#nsIBoxObject *
+-#moz_dom_GetBoxObjectFor (nsdocument, elt)
+-#	nsIDOMNSDocument *nsdocument;
+-#	nsIDOMElement * elt;
+-#    PREINIT:
+-#	nsIBoxObject * _retval;
+-#    CODE:
+-#	nsdocument->GetBoxObjectFor(elt, &_retval);
+-#	RETVAL = _retval;
+-#    OUTPUT:
+-#	RETVAL
+-#
+-### SetBoxObjectFor(nsIDOMElement *elt, nsIBoxObject *boxObject)
+-#void
+-#moz_dom_SetBoxObjectFor (nsdocument, elt, boxObject)
+-#	nsIDOMNSDocument *nsdocument;
+-#	nsIDOMElement * elt;
+-#	nsIBoxObject * boxObject;
+-#    CODE:
+-#	nsdocument->SetBoxObjectFor(elt, boxObject);
+-
+-# -----------------------------------------------------------------------------
+-
+-MODULE = Mozilla::DOM	PACKAGE = Mozilla::DOM::Element	PREFIX = moz_dom_
+-
+-# /usr/include/mozilla/nsIDOMElement.h
+-
+-## NS_DEFINE_STATIC_IID_ACCESSOR(NS_IDOMELEMENT_IID)
+-static nsIID
+-nsIDOMElement::GetIID()
+-    CODE:
+-	const nsIID &id = nsIDOMElement::GetIID();
+-	RETVAL = (nsIID) id;
+-    OUTPUT:
+-	RETVAL
+-
+-## GetTagName(nsAString & aTagName)
+-nsEmbedString
+-moz_dom_GetTagName (element)
+-	nsIDOMElement *element;
+-    PREINIT:
+-	nsEmbedString tagname;
+-    CODE:
+-	element->GetTagName(tagname);
+-	RETVAL = tagname;
+-    OUTPUT:
+-	RETVAL
+-
+-## GetAttribute(const nsAString & name, nsAString & _retval)
+-nsEmbedString
+-moz_dom_GetAttribute (element, name)
+-	nsIDOMElement *element;
+-	nsEmbedString name;
+-    PREINIT:
+-	nsEmbedString attr;
+-    CODE:
+-	element->GetAttribute(name, attr);
+-	RETVAL = attr;
+-    OUTPUT:
+-	RETVAL
+-
+-## SetAttribute(const nsAString & name, const nsAString & value)
+-void
+-moz_dom_SetAttribute (element, name, value)
+-	nsIDOMElement *element;
+-	nsEmbedString name;
+-	nsEmbedString value;
+-    CODE:
+-	/* raises (DOMException) */
+-	element->SetAttribute(name, value);
+-
+-## RemoveAttribute(const nsAString & name)
+-void
+-moz_dom_RemoveAttribute (element, name)
+-	nsIDOMElement *element;
+-	nsEmbedString name;
+-    CODE:
+-	/* raises (DOMException) */
+-	element->RemoveAttribute(name);
+-
+-## GetAttributeNode(const nsAString & name, nsIDOMAttr **_retval)
+-nsIDOMAttr *
+-moz_dom_GetAttributeNode (element, name)
+-	nsIDOMElement *element;
+-	nsEmbedString name;
+-    PREINIT:
+-	nsIDOMAttr *attrnode;
+-    CODE:
+-	element->GetAttributeNode(name, &attrnode);
+-	RETVAL = attrnode;
+-    OUTPUT:
+-	RETVAL
+-
+-## SetAttributeNode(nsIDOMAttr *newAttr, nsIDOMAttr **_retval)
+-nsIDOMAttr *
+-moz_dom_SetAttributeNode (element, newAttr)
+-	nsIDOMElement *element;
+-	nsIDOMAttr *newAttr;
+-    PREINIT:
+-	nsIDOMAttr *attrnode;
+-    CODE:
+-	/* raises (DOMException) */
+-	element->SetAttributeNode(newAttr, &attrnode);
+-	RETVAL = attrnode;
++	/* raises (DOMException) */
++	element->SetAttributeNode(newAttr, &attrnode);
++	RETVAL = attrnode;
+     OUTPUT:
+ 	RETVAL
+ 
+@@ -3060,12 +2614,12 @@ moz_dom_RemoveAttributeNode (element, ol
+ 	RETVAL
+ 
+ ## GetElementsByTagName(const nsAString & name, nsIDOMNodeList **_retval)
+-nsIDOMNodeList *
++nsIDOMHTMLCollection *
+ moz_dom_GetElementsByTagName_nodelist (element, name)
+ 	nsIDOMElement *element;
+ 	nsEmbedString name;
+     PREINIT:
+-	nsIDOMNodeList *nodelist;
++	nsIDOMHTMLCollection *nodelist;
+     CODE:
+ 	element->GetElementsByTagName(name, &nodelist);
+ 	RETVAL = nodelist;
+@@ -3137,13 +2691,13 @@ moz_dom_SetAttributeNodeNS (element, new
+ 	RETVAL
+ 
+ ## GetElementsByTagNameNS(const nsAString & namespaceURI, const nsAString & localName, nsIDOMNodeList **_retval)
+-nsIDOMNodeList *
++nsIDOMHTMLCollection *
+ moz_dom_GetElementsByTagNameNS_nodelist (element, namespaceURI, localName)
+ 	nsIDOMElement *element;
+ 	nsEmbedString namespaceURI;
+ 	nsEmbedString localName;
+     PREINIT:
+-	nsIDOMNodeList *nodelist;
++	nsIDOMHTMLCollection *nodelist;
+     CODE:
+ 	element->GetElementsByTagNameNS(namespaceURI, localName, &nodelist);
+ 	RETVAL = nodelist;
+@@ -3156,7 +2710,7 @@ moz_dom_HasAttribute (element, name)
+ 	nsIDOMElement *element;
+ 	nsEmbedString name;
+     PREINIT:
+-	PRBool has;
++	bool has;
+     CODE:
+ 	element->HasAttribute(name, &has);
+ 	RETVAL = has;
+@@ -3170,7 +2724,7 @@ moz_dom_HasAttributeNS (element, namespa
+ 	nsEmbedString namespaceURI;
+ 	nsEmbedString localName;
+     PREINIT:
+-	PRBool has;
++	bool has;
+     CODE:
+ 	element->HasAttributeNS(namespaceURI, localName, &has);
+ 	RETVAL = has;
+@@ -3179,72 +2733,6 @@ moz_dom_HasAttributeNS (element, namespa
+ 
+ # -----------------------------------------------------------------------------
+ 
+-MODULE = Mozilla::DOM	PACKAGE = Mozilla::DOM::Entity	PREFIX = moz_dom_
+-
+-# /usr/include/mozilla/nsIDOMEntity.h
+-
+-## NS_DEFINE_STATIC_IID_ACCESSOR(NS_IDOMENTITY_IID)
+-static nsIID
+-nsIDOMEntity::GetIID()
+-    CODE:
+-	const nsIID &id = nsIDOMEntity::GetIID();
+-	RETVAL = (nsIID) id;
+-    OUTPUT:
+-	RETVAL
+-
+-## GetPublicId(nsAString & aPublicId)
+-nsEmbedString
+-moz_dom_GetPublicId (entity)
+-	nsIDOMEntity *entity;
+-    PREINIT:
+-	nsEmbedString aPublicId;
+-    CODE:
+-	entity->GetPublicId(aPublicId);
+-	RETVAL = aPublicId;
+-    OUTPUT:
+-	RETVAL
+-
+-## GetSystemId(nsAString & aSystemId)
+-nsEmbedString
+-moz_dom_GetSystemId (entity)
+-	nsIDOMEntity *entity;
+-    PREINIT:
+-	nsEmbedString aSystemId;
+-    CODE:
+-	entity->GetSystemId(aSystemId);
+-	RETVAL = aSystemId;
+-    OUTPUT:
+-	RETVAL
+-
+-## GetNotationName(nsAString & aNotationName)
+-nsEmbedString
+-moz_dom_GetNotationName (entity)
+-	nsIDOMEntity *entity;
+-    PREINIT:
+-	nsEmbedString aNotationName;
+-    CODE:
+-	entity->GetNotationName(aNotationName);
+-	RETVAL = aNotationName;
+-    OUTPUT:
+-	RETVAL
+-
+-# -----------------------------------------------------------------------------
+-
+-MODULE = Mozilla::DOM	PACKAGE = Mozilla::DOM::EntityReference	PREFIX = moz_dom_
+-
+-# /usr/include/mozilla/nsIDOMEntityReference.h
+-
+-## NS_DEFINE_STATIC_IID_ACCESSOR(NS_IDOMENTITYREFERENCE_IID)
+-static nsIID
+-nsIDOMEntityReference::GetIID()
+-    CODE:
+-	const nsIID &id = nsIDOMEntityReference::GetIID();
+-	RETVAL = (nsIID) id;
+-    OUTPUT:
+-	RETVAL
+-
+-# -----------------------------------------------------------------------------
+-
+ MODULE = Mozilla::DOM	PACKAGE = Mozilla::DOM::Attr	PREFIX = moz_dom_
+ 
+ # /usr/include/mozilla/nsIDOMAttr.h
+@@ -3275,7 +2763,7 @@ PRBool
+ moz_dom_GetSpecified (attr)
+ 	nsIDOMAttr *attr;
+     PREINIT:
+-	PRBool spec;
++	bool spec;
+     CODE:
+ 	attr->GetSpecified(&spec);
+ 	RETVAL = spec;
+@@ -3316,45 +2804,6 @@ moz_dom_GetOwnerElement (attr)
+ 
+ # -----------------------------------------------------------------------------
+ 
+-MODULE = Mozilla::DOM	PACKAGE = Mozilla::DOM::Notation	PREFIX = moz_dom_
+-
+-# /usr/include/mozilla/nsIDOMNotation.h
+-
+-## NS_DEFINE_STATIC_IID_ACCESSOR(NS_IDOMNOTATION_IID)
+-static nsIID
+-nsIDOMNotation::GetIID()
+-    CODE:
+-	const nsIID &id = nsIDOMNotation::GetIID();
+-	RETVAL = (nsIID) id;
+-    OUTPUT:
+-	RETVAL
+-
+-## GetPublicId(nsAString & aPublicId)
+-nsEmbedString
+-moz_dom_GetPublicId (notation)
+-	nsIDOMNotation *notation;
+-    PREINIT:
+-	nsEmbedString aPublicId;
+-    CODE:
+-	notation->GetPublicId(aPublicId);
+-	RETVAL = aPublicId;
+-    OUTPUT:
+-	RETVAL
+-
+-## GetSystemId(nsAString & aSystemId)
+-nsEmbedString
+-moz_dom_GetSystemId (notation)
+-	nsIDOMNotation *notation;
+-    PREINIT:
+-	nsEmbedString aSystemId;
+-    CODE:
+-	notation->GetSystemId(aSystemId);
+-	RETVAL = aSystemId;
+-    OUTPUT:
+-	RETVAL
+-
+-# -----------------------------------------------------------------------------
+-
+ MODULE = Mozilla::DOM	PACKAGE = Mozilla::DOM::ProcessingInstruction	PREFIX = moz_dom_
+ 
+ # /usr/include/mozilla/nsIDOMProcessingInstruction.h
+@@ -3597,30 +3046,6 @@ moz_dom_GetName (documenttype)
+     OUTPUT:
+ 	RETVAL
+ 
+-## GetEntities(nsIDOMNamedNodeMap * *aEntities)
+-nsIDOMNamedNodeMap *
+-moz_dom_GetEntities_namednodemap (documenttype)
+-	nsIDOMDocumentType *documenttype;
+-    PREINIT:
+-	nsIDOMNamedNodeMap *nodemap;
+-    CODE:
+-	documenttype->GetEntities(&nodemap);
+-	RETVAL = nodemap;
+-    OUTPUT:
+-	RETVAL
+-
+-## GetNotations(nsIDOMNamedNodeMap * *aNotations)
+-nsIDOMNamedNodeMap *
+-moz_dom_GetNotations_namednodemap (documenttype)
+-	nsIDOMDocumentType *documenttype;
+-    PREINIT:
+-	nsIDOMNamedNodeMap *nodemap;
+-    CODE:
+-	documenttype->GetNotations(&nodemap);
+-	RETVAL = nodemap;
+-    OUTPUT:
+-	RETVAL
+-
+ ## GetPublicId(nsAString & aPublicId)
+ nsEmbedString
+ moz_dom_GetPublicId (documenttype)
+@@ -3679,7 +3104,7 @@ moz_dom_HasFeature (domimplementation, f
+ 	nsEmbedString feature;
+ 	nsEmbedString version;
+     PREINIT:
+-	PRBool has;
++	bool has;
+     CODE:
+ 	domimplementation->HasFeature(feature, version, &has);
+ 	RETVAL = has;
+@@ -3844,7 +3269,7 @@ PRBool
+ moz_dom_GetIsCollapsed (selection)
+ 	nsISelection *selection;
+     PREINIT:
+-	PRBool is;
++	bool is;
+     CODE:
+ 	selection->GetIsCollapsed(&is);
+ 	RETVAL = is;
+@@ -3915,7 +3340,7 @@ moz_dom_ContainsNode (selection, node, e
+ 	nsIDOMNode *node;
+ 	PRBool entirelyContained;
+     PREINIT:
+-	PRBool has;
++	bool has;
+     CODE:
+ 	selection->ContainsNode(node, entirelyContained, &has);
+ 	RETVAL = has;
+@@ -3973,43 +3398,15 @@ nsEmbedString
+ moz_dom_ToString (selection)
+ 	nsISelection *selection;
+     PREINIT:
+-	PRUnichar *u16str;
++	nsEmbedString str;
+     CODE:
+-	selection->ToString(&u16str);
+-	nsEmbedString str(u16str);
++	selection->ToString(str);
+ 	RETVAL = str;
+     OUTPUT:
+ 	RETVAL
+ 
+ # -----------------------------------------------------------------------------
+ 
+-MODULE = Mozilla::DOM	PACKAGE = Mozilla::DOM::DocumentRange	PREFIX = moz_dom_
+-
+-# /usr/include/mozilla/nsIDOMDocumentRange.h
+-
+-## NS_DEFINE_STATIC_IID_ACCESSOR(NS_IDOMDOCUMENTRANGE_IID)
+-static nsIID
+-nsIDOMDocumentRange::GetIID()
+-    CODE:
+-	const nsIID &id = nsIDOMDocumentRange::GetIID();
+-	RETVAL = (nsIID) id;
+-    OUTPUT:
+-	RETVAL
+-
+-## CreateRange(nsIDOMRange **_retval)
+-nsIDOMRange *
+-moz_dom_CreateRange (documentrange)
+-	nsIDOMDocumentRange *documentrange;
+-    PREINIT:
+-	nsIDOMRange * _retval;
+-    CODE:
+-	documentrange->CreateRange(&_retval);
+-	RETVAL = _retval;
+-    OUTPUT:
+-	RETVAL
+-
+-# -----------------------------------------------------------------------------
+-
+ MODULE = Mozilla::DOM	PACKAGE = Mozilla::DOM::Range	PREFIX = moz_dom_
+ 
+ # /usr/include/mozilla/nsIDOMRange.h
+@@ -4076,7 +3473,7 @@ PRBool
+ moz_dom_GetCollapsed (range)
+ 	nsIDOMRange *range;
+     PREINIT:
+-	PRBool collapsed;
++	bool collapsed;
+     CODE:
+ 	range->GetCollapsed(&collapsed);
+ 	RETVAL = collapsed;
+@@ -4279,125 +3676,26 @@ moz_dom_Detach (range)
+ 
+ # -----------------------------------------------------------------------------
+ 
+-MODULE = Mozilla::DOM	PACKAGE = Mozilla::DOM::NSRange	PREFIX = moz_dom_
+-
+-# /usr/include/mozilla/dom/nsIDOMNSRange.h
+-
+-## NS_DEFINE_STATIC_IID_ACCESSOR(NS_IDOMNSRANGE_IID)
+-static nsIID
+-nsIDOMNSRange::GetIID()
+-    CODE:
+-	const nsIID &id = nsIDOMNSRange::GetIID();
+-	RETVAL = (nsIID) id;
+-    OUTPUT:
+-	RETVAL
+ 
+-## CreateContextualFragment(const nsAString & fragment, nsIDOMDocumentFragment **_retval)
+-nsIDOMDocumentFragment *
+-moz_dom_CreateContextualFragment (nsrange, fragment)
+-	nsIDOMNSRange *nsrange;
+-	nsEmbedString fragment;
+-    PREINIT:
+-	nsIDOMDocumentFragment * _retval;
+-    CODE:
+-	nsrange->CreateContextualFragment(fragment, &_retval);
+-	RETVAL = _retval;
+-    OUTPUT:
+-	RETVAL
++MODULE = Mozilla::DOM	PACKAGE = Mozilla::DOM::Supports	PREFIX = moz_dom_
+ 
+-## IsPointInRange(nsIDOMNode *parent, PRInt32 offset, PRBool *_retval)
+-PRBool
+-moz_dom_IsPointInRange (nsrange, parent, offset)
+-	nsIDOMNSRange *nsrange;
+-	nsIDOMNode * parent;
+-	PRInt32  offset;
+-    PREINIT:
+-	PRBool _retval;
+-    CODE:
+-	nsrange->IsPointInRange(parent, offset, &_retval);
+-	RETVAL = _retval;
+-    OUTPUT:
+-	RETVAL
++# /usr/include/mozilla/nsISupports.h
+ 
+-## ComparePoint(nsIDOMNode *parent, PRInt32 offset, PRInt16 *_retval)
+-PRInt16
+-moz_dom_ComparePoint (nsrange, parent, offset)
+-	nsIDOMNSRange *nsrange;
+-	nsIDOMNode * parent;
+-	PRInt32  offset;
++## QueryInterface(const nsIID & uuid, void * *result)
++SV *
++moz_dom_QueryInterface (supports, uuid)
++	nsISupports *supports;
++	nsIID uuid;
+     PREINIT:
+-	PRInt16 _retval;
++	void *res;
++	nsresult rv;
+     CODE:
+-	nsrange->ComparePoint(parent, offset, &_retval);
+-	RETVAL = _retval;
+-    OUTPUT:
+-	RETVAL
+-
+-
+-### see https://developer.mozilla.org/en/Gecko_1.9_Changes_affecting_websites
+-
+-#ifdef NOT_SUPPORTED_ANYMORE
+-
+-## IntersectsNode(nsIDOMNode *n, PRBool *_retval)
+-PRBool
+-moz_dom_IntersectsNode (nsrange, n)
+-	nsIDOMNSRange *nsrange;
+-	nsIDOMNode * n;
+-    PREINIT:
+-	PRBool _retval;
+-    CODE:
+-	nsrange->IntersectsNode(n, &_retval);
+-	RETVAL = _retval;
+-    OUTPUT:
+-	RETVAL
+-
+-## CompareNode(nsIDOMNode *n, PRUint16 *_retval)
+-PRUint16
+-moz_dom_CompareNode (nsrange, n)
+-	nsIDOMNSRange *nsrange;
+-	nsIDOMNode * n;
+-    PREINIT:
+-	PRUint16 _retval;
+-    CODE:
+-	nsrange->CompareNode(n, &_retval);
+-	RETVAL = _retval;
+-    OUTPUT:
+-	RETVAL
+-
+-## NSDetach(void)
+-void
+-moz_dom_NSDetach (nsrange)
+-	nsIDOMNSRange *nsrange;
+-    CODE:
+-	nsrange->NSDetach();
+-
+-#endif
+-
+-
+-# -----------------------------------------------------------------------------
+-
+-
+-MODULE = Mozilla::DOM	PACKAGE = Mozilla::DOM::Supports	PREFIX = moz_dom_
+-
+-# /usr/include/mozilla/nsISupports.h
+-
+-## QueryInterface(const nsIID & uuid, void * *result)
+-SV *
+-moz_dom_QueryInterface (supports, uuid)
+-	nsISupports *supports;
+-	nsIID uuid;
+-    PREINIT:
+-	void *res;
+-	nsresult rv;
+-    CODE:
+-	rv = supports->QueryInterface((const nsIID)uuid, (void **)&res);
+-	if (NS_FAILED(rv))
+-		croak("QueryInterface failed, rv=%d\n", rv);
++	rv = supports->QueryInterface((const nsIID)uuid, (void **)&res);
++	if (NS_FAILED(rv))
++		croak("QueryInterface failed, rv=%d\n", rv);
+ 
+ 	/* XXX: let me know if there's a better way to do this... */
+-	if (uuid.Equals(nsIDOMAbstractView::GetIID())) {
+-		RETVAL = newSVnsIDOMAbstractView((nsIDOMAbstractView *)res);
+-	} else if (uuid.Equals(nsIDOMAttr::GetIID())) {
++	if (uuid.Equals(nsIDOMAttr::GetIID())) {
+ 		RETVAL = newSVnsIDOMAttr((nsIDOMAttr *)res);
+ 	} else if (uuid.Equals(nsIDOMCDATASection::GetIID())) {
+ 		RETVAL = newSVnsIDOMCDATASection((nsIDOMCDATASection *)res);
+@@ -4411,24 +3709,12 @@ moz_dom_QueryInterface (supports, uuid)
+ 		RETVAL = newSVnsIDOMDOMImplementation((nsIDOMDOMImplementation *)res);
+ 	} else if (uuid.Equals(nsIDOMDocument::GetIID())) {
+ 		RETVAL = newSVnsIDOMDocument((nsIDOMDocument *)res);
+-	} else if (uuid.Equals(nsIDOMNSDocument::GetIID())) {
+-		RETVAL = newSVnsIDOMNSDocument((nsIDOMNSDocument *)res);
+-	} else if (uuid.Equals(nsIDOMDocumentEvent::GetIID())) {
+-		RETVAL = newSVnsIDOMDocumentEvent((nsIDOMDocumentEvent *)res);
+ 	} else if (uuid.Equals(nsIDOMDocumentFragment::GetIID())) {
+ 		RETVAL = newSVnsIDOMDocumentFragment((nsIDOMDocumentFragment *)res);
+-	} else if (uuid.Equals(nsIDOMDocumentRange::GetIID())) {
+-		RETVAL = newSVnsIDOMDocumentRange((nsIDOMDocumentRange *)res);
+ 	} else if (uuid.Equals(nsIDOMDocumentType::GetIID())) {
+ 		RETVAL = newSVnsIDOMDocumentType((nsIDOMDocumentType *)res);
+-	} else if (uuid.Equals(nsIDOMDocumentView::GetIID())) {
+-		RETVAL = newSVnsIDOMDocumentView((nsIDOMDocumentView *)res);
+ 	} else if (uuid.Equals(nsIDOMElement::GetIID())) {
+ 		RETVAL = newSVnsIDOMElement((nsIDOMElement *)res);
+-	} else if (uuid.Equals(nsIDOMEntity::GetIID())) {
+-		RETVAL = newSVnsIDOMEntity((nsIDOMEntity *)res);
+-	} else if (uuid.Equals(nsIDOMEntityReference::GetIID())) {
+-		RETVAL = newSVnsIDOMEntityReference((nsIDOMEntityReference *)res);
+ 	} else if (uuid.Equals(nsIDOMEvent::GetIID())) {
+ 		RETVAL = newSVnsIDOMEvent((nsIDOMEvent *)res);
+ 	} else if (uuid.Equals(nsIDOMNSEvent::GetIID())) {
+@@ -4449,22 +3735,16 @@ moz_dom_QueryInterface (supports, uuid)
+ 		RETVAL = newSVnsIDOMNode((nsIDOMNode *)res);
+ 	} else if (uuid.Equals(nsIDOMNodeList::GetIID())) {
+ 		RETVAL = newSVnsIDOMNodeList((nsIDOMNodeList *)res);
+-	} else if (uuid.Equals(nsIDOMNotation::GetIID())) {
+-		RETVAL = newSVnsIDOMNotation((nsIDOMNotation *)res);
+ 	} else if (uuid.Equals(nsIDOMProcessingInstruction::GetIID())) {
+ 		RETVAL = newSVnsIDOMProcessingInstruction((nsIDOMProcessingInstruction *)res);
+ 	} else if (uuid.Equals(nsIDOMRange::GetIID())) {
+ 		RETVAL = newSVnsIDOMRange((nsIDOMRange *)res);
+-	} else if (uuid.Equals(nsIDOMNSRange::GetIID())) {
+-		RETVAL = newSVnsIDOMNSRange((nsIDOMNSRange *)res);
+ 	} else if (uuid.Equals(nsISelection::GetIID())) {
+ 		RETVAL = newSVnsISelection((nsISelection *)res);
+ 	} else if (uuid.Equals(nsIDOMText::GetIID())) {
+ 		RETVAL = newSVnsIDOMText((nsIDOMText *)res);
+ 	} else if (uuid.Equals(nsIDOMUIEvent::GetIID())) {
+ 		RETVAL = newSVnsIDOMUIEvent((nsIDOMUIEvent *)res);
+-	} else if (uuid.Equals(nsIDOMNSUIEvent::GetIID())) {
+-		RETVAL = newSVnsIDOMNSUIEvent((nsIDOMNSUIEvent *)res);
+ 	} else if (uuid.Equals(nsIWebBrowser::GetIID())) {
+ 		RETVAL = newSVnsIWebBrowser((nsIWebBrowser *)res);
+ 	} else if (uuid.Equals(nsIWebNavigation::GetIID())) {
+@@ -4473,8 +3753,6 @@ moz_dom_QueryInterface (supports, uuid)
+ 		RETVAL = newSVnsIURI((nsIURI *)res);
+ 	} else if (uuid.Equals(nsIDOMWindow::GetIID())) {
+ 		RETVAL = newSVnsIDOMWindow((nsIDOMWindow *)res);
+-	} else if (uuid.Equals(nsIDOMWindow2::GetIID())) {
+-		RETVAL = newSVnsIDOMWindow2((nsIDOMWindow2 *)res);
+ 	} else if (uuid.Equals(nsIDOMWindowInternal::GetIID())) {
+ 		RETVAL = newSVnsIDOMWindowInternal((nsIDOMWindowInternal *)res);
+ 	} else if (uuid.Equals(nsIDOMWindowCollection::GetIID())) {
+@@ -4511,12 +3789,8 @@ moz_dom_QueryInterface (supports, uuid)
+ 		RETVAL = newSVnsIDOMHTMLDirectoryElement((nsIDOMHTMLDirectoryElement *)res);
+ 	} else if (uuid.Equals(nsIDOMHTMLDivElement::GetIID())) {
+ 		RETVAL = newSVnsIDOMHTMLDivElement((nsIDOMHTMLDivElement *)res);
+-	} else if (uuid.Equals(nsIDOMNSHTMLDocument::GetIID())) {
+-		RETVAL = newSVnsIDOMNSHTMLDocument((nsIDOMNSHTMLDocument *)res);
+ 	} else if (uuid.Equals(nsIDOMHTMLElement::GetIID())) {
+ 		RETVAL = newSVnsIDOMHTMLElement((nsIDOMHTMLElement *)res);
+-	} else if (uuid.Equals(nsIDOMNSHTMLElement::GetIID())) {
+-		RETVAL = newSVnsIDOMNSHTMLElement((nsIDOMNSHTMLElement *)res);
+ 	} else if (uuid.Equals(nsIDOMHTMLEmbedElement::GetIID())) {
+ 		RETVAL = newSVnsIDOMHTMLEmbedElement((nsIDOMHTMLEmbedElement *)res);
+ 	} else if (uuid.Equals(nsIDOMHTMLFieldSetElement::GetIID())) {
+@@ -4525,18 +3799,12 @@ moz_dom_QueryInterface (supports, uuid)
+ 		RETVAL = newSVnsIDOMHTMLFontElement((nsIDOMHTMLFontElement *)res);
+ 	} else if (uuid.Equals(nsIDOMHTMLFormElement::GetIID())) {
+ 		RETVAL = newSVnsIDOMHTMLFormElement((nsIDOMHTMLFormElement *)res);
+-	} else if (uuid.Equals(nsIDOMNSHTMLFormElement::GetIID())) {
+-		RETVAL = newSVnsIDOMNSHTMLFormElement((nsIDOMNSHTMLFormElement *)res);
+ 	} else if (uuid.Equals(nsIDOMHTMLFrameElement::GetIID())) {
+ 		RETVAL = newSVnsIDOMHTMLFrameElement((nsIDOMHTMLFrameElement *)res);
+-	} else if (uuid.Equals(nsIDOMNSHTMLFrameElement::GetIID())) {
+-		RETVAL = newSVnsIDOMNSHTMLFrameElement((nsIDOMNSHTMLFrameElement *)res);
+ 	} else if (uuid.Equals(nsIDOMHTMLFrameSetElement::GetIID())) {
+ 		RETVAL = newSVnsIDOMHTMLFrameSetElement((nsIDOMHTMLFrameSetElement *)res);
+ 	} else if (uuid.Equals(nsIDOMHTMLHRElement::GetIID())) {
+ 		RETVAL = newSVnsIDOMHTMLHRElement((nsIDOMHTMLHRElement *)res);
+-	} else if (uuid.Equals(nsIDOMNSHTMLHRElement::GetIID())) {
+-		RETVAL = newSVnsIDOMNSHTMLHRElement((nsIDOMNSHTMLHRElement *)res);
+ 	} else if (uuid.Equals(nsIDOMHTMLHeadElement::GetIID())) {
+ 		RETVAL = newSVnsIDOMHTMLHeadElement((nsIDOMHTMLHeadElement *)res);
+ 	} else if (uuid.Equals(nsIDOMHTMLHeadingElement::GetIID())) {
+@@ -4549,8 +3817,6 @@ moz_dom_QueryInterface (supports, uuid)
+ 		RETVAL = newSVnsIDOMHTMLImageElement((nsIDOMHTMLImageElement *)res);
+ 	} else if (uuid.Equals(nsIDOMHTMLInputElement::GetIID())) {
+ 		RETVAL = newSVnsIDOMHTMLInputElement((nsIDOMHTMLInputElement *)res);
+-	} else if (uuid.Equals(nsIDOMHTMLIsIndexElement::GetIID())) {
+-		RETVAL = newSVnsIDOMHTMLIsIndexElement((nsIDOMHTMLIsIndexElement *)res);
+ 	} else if (uuid.Equals(nsIDOMHTMLLIElement::GetIID())) {
+ 		RETVAL = newSVnsIDOMHTMLLIElement((nsIDOMHTMLLIElement *)res);
+ 	} else if (uuid.Equals(nsIDOMHTMLLabelElement::GetIID())) {
+@@ -4605,8 +3871,6 @@ moz_dom_QueryInterface (supports, uuid)
+ 		RETVAL = newSVnsIDOMHTMLTableSectionElement((nsIDOMHTMLTableSectionElement *)res);
+ 	} else if (uuid.Equals(nsIDOMHTMLTextAreaElement::GetIID())) {
+ 		RETVAL = newSVnsIDOMHTMLTextAreaElement((nsIDOMHTMLTextAreaElement *)res);
+-	} else if (uuid.Equals(nsIDOMNSHTMLTextAreaElement::GetIID())) {
+-		RETVAL = newSVnsIDOMNSHTMLTextAreaElement((nsIDOMNSHTMLTextAreaElement *)res);
+ 	} else if (uuid.Equals(nsIDOMHTMLTitleElement::GetIID())) {
+ 		RETVAL = newSVnsIDOMHTMLTitleElement((nsIDOMHTMLTitleElement *)res);
+ 	} else if (uuid.Equals(nsIDOMHTMLUListElement::GetIID())) {
+@@ -4683,7 +3947,7 @@ PRBool
+ moz_dom_GetCanGoBack (webnavigation)
+ 	nsIWebNavigation *webnavigation;
+     PREINIT:
+-	PRBool aCanGoBack;
++	bool aCanGoBack;
+     CODE:
+ 	webnavigation->GetCanGoBack(&aCanGoBack);
+ 	RETVAL = aCanGoBack;
+@@ -4695,7 +3959,7 @@ PRBool
+ moz_dom_GetCanGoForward (webnavigation)
+ 	nsIWebNavigation *webnavigation;
+     PREINIT:
+-	PRBool aCanGoForward;
++	bool aCanGoForward;
+     CODE:
+ 	webnavigation->GetCanGoForward(&aCanGoForward);
+ 	RETVAL = aCanGoForward;
+@@ -5066,7 +4330,7 @@ moz_dom_Equals (uri, other)
+ 	nsIURI *uri;
+ 	nsIURI * other;
+     PREINIT:
+-	PRBool _retval;
++	bool _retval;
+     CODE:
+ 	uri->Equals(other, &_retval);
+ 	RETVAL = _retval;
+@@ -5079,7 +4343,7 @@ moz_dom_SchemeIs (uri, scheme)
+ 	nsIURI *uri;
+ 	const char * scheme;
+     PREINIT:
+-	PRBool _retval;
++	bool _retval;
+     CODE:
+ 	uri->SchemeIs(scheme, &_retval);
+ 	RETVAL = _retval;
+@@ -5406,13 +4670,6 @@ moz_dom_SetType (htmlanchorelement, type
+     CODE:
+ 	htmlanchorelement->SetType(type);
+ 
+-## Blur(void)
+-void
+-moz_dom_Blur (htmlanchorelement)
+-	nsIDOMHTMLAnchorElement *htmlanchorelement;
+-    CODE:
+-	htmlanchorelement->Blur();
+-
+ ## Focus(void)
+ void
+ moz_dom_Focus (htmlanchorelement)
+@@ -5755,7 +5012,7 @@ PRBool
+ moz_dom_GetNoHref (htmlareaelement)
+ 	nsIDOMHTMLAreaElement *htmlareaelement;
+     PREINIT:
+-	PRBool nohref;
++	bool nohref;
+     CODE:
+ 	htmlareaelement->GetNoHref(&nohref);
+ 	RETVAL = nohref;
+@@ -6107,7 +5364,7 @@ PRBool
+ moz_dom_GetDisabled (htmlbuttonelement)
+ 	nsIDOMHTMLButtonElement *htmlbuttonelement;
+     PREINIT:
+-	PRBool disabled;
++	bool disabled;
+     CODE:
+ 	htmlbuttonelement->GetDisabled(&disabled);
+ 	RETVAL = disabled;
+@@ -6267,7 +5524,7 @@ PRBool
+ moz_dom_GetCompact (htmldlistelement)
+ 	nsIDOMHTMLDListElement *htmldlistelement;
+     PREINIT:
+-	PRBool compact;
++	bool compact;
+     CODE:
+ 	htmldlistelement->GetCompact(&compact);
+ 	RETVAL = compact;
+@@ -6302,7 +5559,7 @@ PRBool
+ moz_dom_GetCompact (htmldirectoryelement)
+ 	nsIDOMHTMLDirectoryElement *htmldirectoryelement;
+     PREINIT:
+-	PRBool compact;
++	bool compact;
+     CODE:
+ 	htmldirectoryelement->GetCompact(&compact);
+ 	RETVAL = compact;
+@@ -6469,198 +5726,6 @@ moz_dom_SetClassName (htmlelement, class
+ 
+ # -----------------------------------------------------------------------------
+ 
+-MODULE = Mozilla::DOM	PACKAGE = Mozilla::DOM::NSHTMLElement	PREFIX = moz_dom_
+-
+-# /usr/include/mozilla/dom/nsIDOMNSHTMLElement.h
+-
+-## NS_DEFINE_STATIC_IID_ACCESSOR(NS_IDOMNSHTMLELEMENT_IID)
+-static nsIID
+-nsIDOMNSHTMLElement::GetIID()
+-    CODE:
+-	const nsIID &id = nsIDOMNSHTMLElement::GetIID();
+-	RETVAL = (nsIID) id;
+-    OUTPUT:
+-	RETVAL
+-
+-## GetOffsetTop(PRInt32 *aOffsetTop)
+-PRInt32
+-moz_dom_GetOffsetTop (nshtmlelement)
+-	nsIDOMNSHTMLElement *nshtmlelement;
+-    PREINIT:
+-	PRInt32 aOffsetTop;
+-    CODE:
+-	nshtmlelement->GetOffsetTop(&aOffsetTop);
+-	RETVAL = aOffsetTop;
+-    OUTPUT:
+-	RETVAL
+-
+-## GetOffsetLeft(PRInt32 *aOffsetLeft)
+-PRInt32
+-moz_dom_GetOffsetLeft (nshtmlelement)
+-	nsIDOMNSHTMLElement *nshtmlelement;
+-    PREINIT:
+-	PRInt32 aOffsetLeft;
+-    CODE:
+-	nshtmlelement->GetOffsetLeft(&aOffsetLeft);
+-	RETVAL = aOffsetLeft;
+-    OUTPUT:
+-	RETVAL
+-
+-## GetOffsetWidth(PRInt32 *aOffsetWidth)
+-PRInt32
+-moz_dom_GetOffsetWidth (nshtmlelement)
+-	nsIDOMNSHTMLElement *nshtmlelement;
+-    PREINIT:
+-	PRInt32 aOffsetWidth;
+-    CODE:
+-	nshtmlelement->GetOffsetWidth(&aOffsetWidth);
+-	RETVAL = aOffsetWidth;
+-    OUTPUT:
+-	RETVAL
+-
+-## GetOffsetHeight(PRInt32 *aOffsetHeight)
+-PRInt32
+-moz_dom_GetOffsetHeight (nshtmlelement)
+-	nsIDOMNSHTMLElement *nshtmlelement;
+-    PREINIT:
+-	PRInt32 aOffsetHeight;
+-    CODE:
+-	nshtmlelement->GetOffsetHeight(&aOffsetHeight);
+-	RETVAL = aOffsetHeight;
+-    OUTPUT:
+-	RETVAL
+-
+-## GetOffsetParent(nsIDOMElement * *aOffsetParent)
+-nsIDOMElement *
+-moz_dom_GetOffsetParent (nshtmlelement)
+-	nsIDOMNSHTMLElement *nshtmlelement;
+-    PREINIT:
+-	nsIDOMElement * aOffsetParent;
+-    CODE:
+-	nshtmlelement->GetOffsetParent(&aOffsetParent);
+-	RETVAL = aOffsetParent;
+-    OUTPUT:
+-	RETVAL
+-
+-## GetInnerHTML(nsAString & aInnerHTML)
+-nsEmbedString
+-moz_dom_GetInnerHTML (nshtmlelement)
+-	nsIDOMNSHTMLElement *nshtmlelement;
+-    PREINIT:
+-	nsEmbedString aInnerHTML;
+-    CODE:
+-	nshtmlelement->GetInnerHTML(aInnerHTML);
+-	RETVAL = aInnerHTML;
+-    OUTPUT:
+-	RETVAL
+-
+-## SetInnerHTML(const nsAString & aInnerHTML)
+-void
+-moz_dom_SetInnerHTML (nshtmlelement, aInnerHTML)
+-	nsIDOMNSHTMLElement *nshtmlelement;
+-	nsEmbedString aInnerHTML;
+-    CODE:
+-	nshtmlelement->SetInnerHTML(aInnerHTML);
+-
+-## GetScrollTop(PRInt32 *aScrollTop)
+-PRInt32
+-moz_dom_GetScrollTop (nshtmlelement)
+-	nsIDOMNSHTMLElement *nshtmlelement;
+-    PREINIT:
+-	PRInt32 aScrollTop;
+-    CODE:
+-	((nsIDOMNSElement*)nshtmlelement)->GetScrollTop(&aScrollTop);
+-	RETVAL = aScrollTop;
+-    OUTPUT:
+-	RETVAL
+-
+-## SetScrollTop(PRInt32 aScrollTop)
+-void
+-moz_dom_SetScrollTop (nshtmlelement, aScrollTop)
+-	nsIDOMNSHTMLElement *nshtmlelement;
+-	PRInt32  aScrollTop;
+-    CODE:
+-	((nsIDOMNSElement*)nshtmlelement)->SetScrollTop(aScrollTop);
+-
+-## GetScrollLeft(PRInt32 *aScrollLeft)
+-PRInt32
+-moz_dom_GetScrollLeft (nshtmlelement)
+-	nsIDOMNSHTMLElement *nshtmlelement;
+-    PREINIT:
+-	PRInt32 aScrollLeft;
+-    CODE:
+-	((nsIDOMNSElement*)nshtmlelement)->GetScrollLeft(&aScrollLeft);
+-	RETVAL = aScrollLeft;
+-    OUTPUT:
+-	RETVAL
+-
+-## SetScrollLeft(PRInt32 aScrollLeft)
+-void
+-moz_dom_SetScrollLeft (nshtmlelement, aScrollLeft)
+-	nsIDOMNSHTMLElement *nshtmlelement;
+-	PRInt32  aScrollLeft;
+-    CODE:
+-	((nsIDOMNSElement*)nshtmlelement)->SetScrollLeft(aScrollLeft);
+-
+-## GetScrollHeight(PRInt32 *aScrollHeight)
+-PRInt32
+-moz_dom_GetScrollHeight (nshtmlelement)
+-	nsIDOMNSHTMLElement *nshtmlelement;
+-    PREINIT:
+-	PRInt32 aScrollHeight;
+-    CODE:
+-	((nsIDOMNSElement*)nshtmlelement)->GetScrollHeight(&aScrollHeight);
+-	RETVAL = aScrollHeight;
+-    OUTPUT:
+-	RETVAL
+-
+-## GetScrollWidth(PRInt32 *aScrollWidth)
+-PRInt32
+-moz_dom_GetScrollWidth (nshtmlelement)
+-	nsIDOMNSHTMLElement *nshtmlelement;
+-    PREINIT:
+-	PRInt32 aScrollWidth;
+-    CODE:
+-	((nsIDOMNSElement*)nshtmlelement)->GetScrollWidth(&aScrollWidth);
+-	RETVAL = aScrollWidth;
+-    OUTPUT:
+-	RETVAL
+-
+-## GetClientHeight(PRInt32 *aClientHeight)
+-PRInt32
+-moz_dom_GetClientHeight (nshtmlelement)
+-	nsIDOMNSHTMLElement *nshtmlelement;
+-    PREINIT:
+-	PRInt32 aClientHeight;
+-    CODE:
+-	((nsIDOMNSElement*)nshtmlelement)->GetClientHeight(&aClientHeight);
+-	RETVAL = aClientHeight;
+-    OUTPUT:
+-	RETVAL
+-
+-## GetClientWidth(PRInt32 *aClientWidth)
+-PRInt32
+-moz_dom_GetClientWidth (nshtmlelement)
+-	nsIDOMNSHTMLElement *nshtmlelement;
+-    PREINIT:
+-	PRInt32 aClientWidth;
+-    CODE:
+-	((nsIDOMNSElement*)nshtmlelement)->GetClientWidth(&aClientWidth);
+-	RETVAL = aClientWidth;
+-    OUTPUT:
+-	RETVAL
+-
+-## ScrollIntoView(PRBool top, PRUint8 _argc)
+-void
+-moz_dom_ScrollIntoView (nshtmlelement, top, _argc)
+-	nsIDOMNSHTMLElement *nshtmlelement;
+-	PRBool  top;
+-	PRUint8 _argc;
+-    CODE:
+-	nshtmlelement->ScrollIntoView(top, _argc);
+-
+-# -----------------------------------------------------------------------------
+-
+ MODULE = Mozilla::DOM	PACKAGE = Mozilla::DOM::HTMLEmbedElement	PREFIX = moz_dom_
+ 
+ # /usr/include/mozilla/nsIDOMHTMLEmbedElement.h
+@@ -7189,7 +6254,7 @@ PRBool
+ moz_dom_GetNoResize (htmlframeelement)
+ 	nsIDOMHTMLFrameElement *htmlframeelement;
+     PREINIT:
+-	PRBool noresize;
++	bool noresize;
+     CODE:
+ 	htmlframeelement->GetNoResize(&noresize);
+ 	RETVAL = noresize;
+@@ -7351,7 +6416,7 @@ PRBool
+ moz_dom_GetNoShade (htmlhrelement)
+ 	nsIDOMHTMLHRElement *htmlhrelement;
+     PREINIT:
+-	PRBool noshade;
++	bool noshade;
+     CODE:
+ 	htmlhrelement->GetNoShade(&noshade);
+ 	RETVAL = noshade;
+@@ -7421,26 +6486,6 @@ nsIDOMHTMLHeadElement::GetIID()
+     OUTPUT:
+ 	RETVAL
+ 
+-## GetProfile(nsAString & aProfile)
+-nsEmbedString
+-moz_dom_GetProfile (htmlheadelement)
+-	nsIDOMHTMLHeadElement *htmlheadelement;
+-    PREINIT:
+-	nsEmbedString profile;
+-    CODE:
+-	htmlheadelement->GetProfile(profile);
+-	RETVAL = profile;
+-    OUTPUT:
+-	RETVAL
+-
+-## SetProfile(const nsAString & aProfile)
+-void
+-moz_dom_SetProfile (htmlheadelement, profile)
+-	nsIDOMHTMLHeadElement *htmlheadelement;
+-	nsEmbedString profile;
+-    CODE:
+-	htmlheadelement->SetProfile(profile);
+-
+ # -----------------------------------------------------------------------------
+ 
+ MODULE = Mozilla::DOM	PACKAGE = Mozilla::DOM::HTMLHeadingElement	PREFIX = moz_dom_
+@@ -7838,7 +6883,7 @@ PRInt32
+ moz_dom_GetHeight (htmlimageelement)
+ 	nsIDOMHTMLImageElement *htmlimageelement;
+     PREINIT:
+-	PRInt32 height;
++	uint32_t height;
+     CODE:
+ 	htmlimageelement->GetHeight(&height);
+ 	RETVAL = height;
+@@ -7878,7 +6923,7 @@ PRBool
+ moz_dom_GetIsMap (htmlimageelement)
+ 	nsIDOMHTMLImageElement *htmlimageelement;
+     PREINIT:
+-	PRBool ismap;
++	bool ismap;
+     CODE:
+ 	htmlimageelement->GetIsMap(&ismap);
+ 	RETVAL = ismap;
+@@ -7978,7 +7023,7 @@ PRInt32
+ moz_dom_GetWidth (htmlimageelement)
+ 	nsIDOMHTMLImageElement *htmlimageelement;
+     PREINIT:
+-	PRInt32 width;
++	uint32_t width;
+     CODE:
+ 	htmlimageelement->GetWidth(&width);
+ 	RETVAL = width;
+@@ -8033,7 +7078,7 @@ PRBool
+ moz_dom_GetDefaultChecked (htmlinputelement)
+ 	nsIDOMHTMLInputElement *htmlinputelement;
+     PREINIT:
+-	PRBool defaultchecked;
++	bool defaultchecked;
+     CODE:
+ 	htmlinputelement->GetDefaultChecked(&defaultchecked);
+ 	RETVAL = defaultchecked;
+@@ -8145,7 +7190,7 @@ PRBool
+ moz_dom_GetChecked (htmlinputelement)
+ 	nsIDOMHTMLInputElement *htmlinputelement;
+     PREINIT:
+-	PRBool checked;
++	bool checked;
+     CODE:
+ 	htmlinputelement->GetChecked(&checked);
+ 	RETVAL = checked;
+@@ -8165,7 +7210,7 @@ PRBool
+ moz_dom_GetDisabled (htmlinputelement)
+ 	nsIDOMHTMLInputElement *htmlinputelement;
+     PREINIT:
+-	PRBool disabled;
++	bool disabled;
+     CODE:
+ 	htmlinputelement->GetDisabled(&disabled);
+ 	RETVAL = disabled;
+@@ -8225,7 +7270,7 @@ PRBool
+ moz_dom_GetReadOnly (htmlinputelement)
+ 	nsIDOMHTMLInputElement *htmlinputelement;
+     PREINIT:
+-	PRBool readonly;
++	bool readonly;
+     CODE:
+ 	htmlinputelement->GetReadOnly(&readonly);
+ 	RETVAL = readonly;
+@@ -8360,13 +7405,6 @@ moz_dom_SetValue (htmlinputelement, valu
+     CODE:
+ 	htmlinputelement->SetValue(value);
+ 
+-## Blur(void)
+-void
+-moz_dom_Blur (htmlinputelement)
+-	nsIDOMHTMLInputElement *htmlinputelement;
+-    CODE:
+-	htmlinputelement->Blur();
+-
+ ## Focus(void)
+ void
+ moz_dom_Focus (htmlinputelement)
+@@ -8381,60 +7419,6 @@ moz_dom_Select (htmlinputelement)
+     CODE:
+ 	htmlinputelement->Select();
+ 
+-## Click(void)
+-void
+-moz_dom_Click (htmlinputelement)
+-	nsIDOMHTMLInputElement *htmlinputelement;
+-    CODE:
+-	htmlinputelement->Click();
+-
+-# -----------------------------------------------------------------------------
+-
+-MODULE = Mozilla::DOM	PACKAGE = Mozilla::DOM::HTMLIsIndexElement	PREFIX = moz_dom_
+-
+-# /usr/include/mozilla/nsIDOMHTMLIsIndexElement.h
+-
+-## NS_DEFINE_STATIC_IID_ACCESSOR(NS_IDOMHTMLISINDEXELEMENT_IID)
+-static nsIID
+-nsIDOMHTMLIsIndexElement::GetIID()
+-    CODE:
+-	const nsIID &id = nsIDOMHTMLIsIndexElement::GetIID();
+-	RETVAL = (nsIID) id;
+-    OUTPUT:
+-	RETVAL
+-
+-## GetForm(nsIDOMHTMLFormElement * *aForm)
+-nsIDOMHTMLFormElement *
+-moz_dom_GetForm (htmlisindexelement)
+-	nsIDOMHTMLIsIndexElement *htmlisindexelement;
+-    PREINIT:
+-	nsIDOMHTMLFormElement * form;
+-    CODE:
+-	htmlisindexelement->GetForm(&form);
+-	RETVAL = form;
+-    OUTPUT:
+-	RETVAL
+-
+-## GetPrompt(nsAString & aPrompt)
+-nsEmbedString
+-moz_dom_GetPrompt (htmlisindexelement)
+-	nsIDOMHTMLIsIndexElement *htmlisindexelement;
+-    PREINIT:
+-	nsEmbedString prompt;
+-    CODE:
+-	htmlisindexelement->GetPrompt(prompt);
+-	RETVAL = prompt;
+-    OUTPUT:
+-	RETVAL
+-
+-## SetPrompt(const nsAString & aPrompt)
+-void
+-moz_dom_SetPrompt (htmlisindexelement, prompt)
+-	nsIDOMHTMLIsIndexElement *htmlisindexelement;
+-	nsEmbedString prompt;
+-    CODE:
+-	htmlisindexelement->SetPrompt(prompt);
+-
+ # -----------------------------------------------------------------------------
+ 
+ MODULE = Mozilla::DOM	PACKAGE = Mozilla::DOM::HTMLLIElement	PREFIX = moz_dom_
+@@ -8644,7 +7628,7 @@ PRBool
+ moz_dom_GetDisabled (htmllinkelement)
+ 	nsIDOMHTMLLinkElement *htmllinkelement;
+     PREINIT:
+-	PRBool disabled;
++	bool disabled;
+     CODE:
+ 	htmllinkelement->GetDisabled(&disabled);
+ 	RETVAL = disabled;
+@@ -8886,7 +7870,7 @@ PRBool
+ moz_dom_GetCompact (htmlmenuelement)
+ 	nsIDOMHTMLMenuElement *htmlmenuelement;
+     PREINIT:
+-	PRBool compact;
++	bool compact;
+     CODE:
+ 	htmlmenuelement->GetCompact(&compact);
+ 	RETVAL = compact;
+@@ -9071,7 +8055,7 @@ PRBool
+ moz_dom_GetCompact (htmlolistelement)
+ 	nsIDOMHTMLOListElement *htmlolistelement;
+     PREINIT:
+-	PRBool compact;
++	bool compact;
+     CODE:
+ 	htmlolistelement->GetCompact(&compact);
+ 	RETVAL = compact;
+@@ -9298,7 +8282,7 @@ PRBool
+ moz_dom_GetDeclare (htmlobjectelement)
+ 	nsIDOMHTMLObjectElement *htmlobjectelement;
+     PREINIT:
+-	PRBool declare;
++	bool declare;
+     CODE:
+ 	htmlobjectelement->GetDeclare(&declare);
+ 	RETVAL = declare;
+@@ -9525,7 +8509,7 @@ PRBool
+ moz_dom_GetDisabled (htmloptgroupelement)
+ 	nsIDOMHTMLOptGroupElement *htmloptgroupelement;
+     PREINIT:
+-	PRBool disabled;
++	bool disabled;
+     CODE:
+ 	htmloptgroupelement->GetDisabled(&disabled);
+ 	RETVAL = disabled;
+@@ -9592,7 +8576,7 @@ PRBool
+ moz_dom_GetDefaultSelected (htmloptionelement)
+ 	nsIDOMHTMLOptionElement *htmloptionelement;
+     PREINIT:
+-	PRBool defaultselected;
++	bool defaultselected;
+     CODE:
+ 	htmloptionelement->GetDefaultSelected(&defaultselected);
+ 	RETVAL = defaultselected;
+@@ -9636,7 +8620,7 @@ PRBool
+ moz_dom_GetDisabled (htmloptionelement)
+ 	nsIDOMHTMLOptionElement *htmloptionelement;
+     PREINIT:
+-	PRBool disabled;
++	bool disabled;
+     CODE:
+ 	htmloptionelement->GetDisabled(&disabled);
+ 	RETVAL = disabled;
+@@ -9676,7 +8660,7 @@ PRBool
+ moz_dom_GetSelected (htmloptionelement)
+ 	nsIDOMHTMLOptionElement *htmloptionelement;
+     PREINIT:
+-	PRBool selected;
++	bool selected;
+     CODE:
+ 	htmloptionelement->GetSelected(&selected);
+ 	RETVAL = selected;
+@@ -10072,7 +9056,7 @@ PRBool
+ moz_dom_GetDefer (htmlscriptelement)
+ 	nsIDOMHTMLScriptElement *htmlscriptelement;
+     PREINIT:
+-	PRBool defer;
++	bool defer;
+     CODE:
+ 	htmlscriptelement->GetDefer(&defer);
+ 	RETVAL = defer;
+@@ -10243,7 +9227,7 @@ PRBool
+ moz_dom_GetDisabled (htmlselectelement)
+ 	nsIDOMHTMLSelectElement *htmlselectelement;
+     PREINIT:
+-	PRBool disabled;
++	bool disabled;
+     CODE:
+ 	htmlselectelement->GetDisabled(&disabled);
+ 	RETVAL = disabled;
+@@ -10263,7 +9247,7 @@ PRBool
+ moz_dom_GetMultiple (htmlselectelement)
+ 	nsIDOMHTMLSelectElement *htmlselectelement;
+     PREINIT:
+-	PRBool multiple;
++	bool multiple;
+     CODE:
+ 	htmlselectelement->GetMultiple(&multiple);
+ 	RETVAL = multiple;
+@@ -10303,7 +9287,7 @@ PRInt32
+ moz_dom_GetSize (htmlselectelement)
+ 	nsIDOMHTMLSelectElement *htmlselectelement;
+     PREINIT:
+-	PRInt32 size;
++	uint32_t size;
+     CODE:
+ 	htmlselectelement->GetSize(&size);
+ 	RETVAL = size;
+@@ -10338,12 +9322,12 @@ moz_dom_SetTabIndex (htmlselectelement,
+     CODE:
+ 	htmlselectelement->SetTabIndex(tabindex);
+ 
+-## Add(nsIDOMHTMLElement *element, nsIDOMHTMLElement *before)
++## Add(nsIDOMHTMLElement *element, nsIVariant *before)
+ void
+ moz_dom_Add (htmlselectelement, element, before)
+ 	nsIDOMHTMLSelectElement *htmlselectelement;
+ 	nsIDOMHTMLElement * element;
+-	nsIDOMHTMLElement * before;
++	nsIVariant * before;
+     CODE:
+ 	htmlselectelement->Add(element, before);
+ 
+@@ -10355,13 +9339,6 @@ moz_dom_Remove (htmlselectelement, index
+     CODE:
+ 	htmlselectelement->Remove(index);
+ 
+-## Blur(void)
+-void
+-moz_dom_Blur (htmlselectelement)
+-	nsIDOMHTMLSelectElement *htmlselectelement;
+-    CODE:
+-	htmlselectelement->Blur();
+-
+ ## Focus(void)
+ void
+ moz_dom_Focus (htmlselectelement)
+@@ -10389,7 +9366,7 @@ PRBool
+ moz_dom_GetDisabled (htmlstyleelement)
+ 	nsIDOMHTMLStyleElement *htmlstyleelement;
+     PREINIT:
+-	PRBool disabled;
++	bool disabled;
+     CODE:
+ 	htmlstyleelement->GetDisabled(&disabled);
+ 	RETVAL = disabled;
+@@ -10691,7 +9668,7 @@ PRBool
+ moz_dom_GetNoWrap (htmltablecellelement)
+ 	nsIDOMHTMLTableCellElement *htmltablecellelement;
+     PREINIT:
+-	PRBool nowrap;
++	bool nowrap;
+     CODE:
+ 	htmltablecellelement->GetNoWrap(&nowrap);
+ 	RETVAL = nowrap;
+@@ -11670,7 +10647,7 @@ PRBool
+ moz_dom_GetDisabled (htmltextareaelement)
+ 	nsIDOMHTMLTextAreaElement *htmltextareaelement;
+     PREINIT:
+-	PRBool disabled;
++	bool disabled;
+     CODE:
+ 	htmltextareaelement->GetDisabled(&disabled);
+ 	RETVAL = disabled;
+@@ -11710,7 +10687,7 @@ PRBool
+ moz_dom_GetReadOnly (htmltextareaelement)
+ 	nsIDOMHTMLTextAreaElement *htmltextareaelement;
+     PREINIT:
+-	PRBool readonly;
++	bool readonly;
+     CODE:
+ 	htmltextareaelement->GetReadOnly(&readonly);
+ 	RETVAL = readonly;
+@@ -11797,13 +10774,6 @@ moz_dom_SetValue (htmltextareaelement, v
+     CODE:
+ 	htmltextareaelement->SetValue(value);
+ 
+-## Blur(void)
+-void
+-moz_dom_Blur (htmltextareaelement)
+-	nsIDOMHTMLTextAreaElement *htmltextareaelement;
+-    CODE:
+-	htmltextareaelement->Blur();
+-
+ ## Focus(void)
+ void
+ moz_dom_Focus (htmltextareaelement)
+@@ -11873,7 +10843,7 @@ PRBool
+ moz_dom_GetCompact (htmlulistelement)
+ 	nsIDOMHTMLUListElement *htmlulistelement;
+     PREINIT:
+-	PRBool compact;
++	bool compact;
+     CODE:
+ 	htmlulistelement->GetCompact(&compact);
+ 	RETVAL = compact;
+@@ -11910,576 +10880,6 @@ moz_dom_SetType (htmlulistelement, type)
+ 
+ # -----------------------------------------------------------------------------
+ 
+-MODULE = Mozilla::DOM	PACKAGE = Mozilla::DOM::NSHTMLDocument	PREFIX = moz_dom_
+-
+-# /usr/include/mozilla/dom/nsIDOMNSHTMLDocument.h
+-
+-## NS_DEFINE_STATIC_IID_ACCESSOR(NS_IDOMNSHTMLDOCUMENT_IID)
+-static nsIID
+-nsIDOMNSHTMLDocument::GetIID()
+-    CODE:
+-	const nsIID &id = nsIDOMNSHTMLDocument::GetIID();
+-	RETVAL = (nsIID) id;
+-    OUTPUT:
+-	RETVAL
+-
+-## GetWidth(PRInt32 *aWidth)
+-PRInt32
+-moz_dom_GetWidth (nshtmldocument)
+-	nsIDOMNSHTMLDocument *nshtmldocument;
+-    PREINIT:
+-	PRInt32 aWidth;
+-    CODE:
+-	nshtmldocument->GetWidth(&aWidth);
+-	RETVAL = aWidth;
+-    OUTPUT:
+-	RETVAL
+-
+-## GetHeight(PRInt32 *aHeight)
+-PRInt32
+-moz_dom_GetHeight (nshtmldocument)
+-	nsIDOMNSHTMLDocument *nshtmldocument;
+-    PREINIT:
+-	PRInt32 aHeight;
+-    CODE:
+-	nshtmldocument->GetHeight(&aHeight);
+-	RETVAL = aHeight;
+-    OUTPUT:
+-	RETVAL
+-
+-## GetAlinkColor(nsAString & aAlinkColor)
+-nsEmbedString
+-moz_dom_GetAlinkColor (nshtmldocument)
+-	nsIDOMNSHTMLDocument *nshtmldocument;
+-    PREINIT:
+-	nsEmbedString aAlinkColor;
+-    CODE:
+-	nshtmldocument->GetAlinkColor(aAlinkColor);
+-	RETVAL = aAlinkColor;
+-    OUTPUT:
+-	RETVAL
+-
+-## SetAlinkColor(const nsAString & aAlinkColor)
+-void
+-moz_dom_SetAlinkColor (nshtmldocument, aAlinkColor)
+-	nsIDOMNSHTMLDocument *nshtmldocument;
+-	nsEmbedString aAlinkColor;
+-    CODE:
+-	nshtmldocument->SetAlinkColor(aAlinkColor);
+-
+-## GetLinkColor(nsAString & aLinkColor)
+-nsEmbedString
+-moz_dom_GetLinkColor (nshtmldocument)
+-	nsIDOMNSHTMLDocument *nshtmldocument;
+-    PREINIT:
+-	nsEmbedString aLinkColor;
+-    CODE:
+-	nshtmldocument->GetLinkColor(aLinkColor);
+-	RETVAL = aLinkColor;
+-    OUTPUT:
+-	RETVAL
+-
+-## SetLinkColor(const nsAString & aLinkColor)
+-void
+-moz_dom_SetLinkColor (nshtmldocument, aLinkColor)
+-	nsIDOMNSHTMLDocument *nshtmldocument;
+-	nsEmbedString aLinkColor;
+-    CODE:
+-	nshtmldocument->SetLinkColor(aLinkColor);
+-
+-## GetVlinkColor(nsAString & aVlinkColor)
+-nsEmbedString
+-moz_dom_GetVlinkColor (nshtmldocument)
+-	nsIDOMNSHTMLDocument *nshtmldocument;
+-    PREINIT:
+-	nsEmbedString aVlinkColor;
+-    CODE:
+-	nshtmldocument->GetVlinkColor(aVlinkColor);
+-	RETVAL = aVlinkColor;
+-    OUTPUT:
+-	RETVAL
+-
+-## SetVlinkColor(const nsAString & aVlinkColor)
+-void
+-moz_dom_SetVlinkColor (nshtmldocument, aVlinkColor)
+-	nsIDOMNSHTMLDocument *nshtmldocument;
+-	nsEmbedString aVlinkColor;
+-    CODE:
+-	nshtmldocument->SetVlinkColor(aVlinkColor);
+-
+-## GetBgColor(nsAString & aBgColor)
+-nsEmbedString
+-moz_dom_GetBgColor (nshtmldocument)
+-	nsIDOMNSHTMLDocument *nshtmldocument;
+-    PREINIT:
+-	nsEmbedString aBgColor;
+-    CODE:
+-	nshtmldocument->GetBgColor(aBgColor);
+-	RETVAL = aBgColor;
+-    OUTPUT:
+-	RETVAL
+-
+-## SetBgColor(const nsAString & aBgColor)
+-void
+-moz_dom_SetBgColor (nshtmldocument, aBgColor)
+-	nsIDOMNSHTMLDocument *nshtmldocument;
+-	nsEmbedString aBgColor;
+-    CODE:
+-	nshtmldocument->SetBgColor(aBgColor);
+-
+-## GetFgColor(nsAString & aFgColor)
+-nsEmbedString
+-moz_dom_GetFgColor (nshtmldocument)
+-	nsIDOMNSHTMLDocument *nshtmldocument;
+-    PREINIT:
+-	nsEmbedString aFgColor;
+-    CODE:
+-	nshtmldocument->GetFgColor(aFgColor);
+-	RETVAL = aFgColor;
+-    OUTPUT:
+-	RETVAL
+-
+-## SetFgColor(const nsAString & aFgColor)
+-void
+-moz_dom_SetFgColor (nshtmldocument, aFgColor)
+-	nsIDOMNSHTMLDocument *nshtmldocument;
+-	nsEmbedString aFgColor;
+-    CODE:
+-	nshtmldocument->SetFgColor(aFgColor);
+-
+-## GetDomain(nsAString & aDomain)
+-nsEmbedString
+-moz_dom_GetDomain (nshtmldocument)
+-	nsIDOMNSHTMLDocument *nshtmldocument;
+-    PREINIT:
+-	nsEmbedString aDomain;
+-    CODE:
+-	nshtmldocument->GetDomain(aDomain);
+-	RETVAL = aDomain;
+-    OUTPUT:
+-	RETVAL
+-
+-## SetDomain(const nsAString & aDomain)
+-void
+-moz_dom_SetDomain (nshtmldocument, aDomain)
+-	nsIDOMNSHTMLDocument *nshtmldocument;
+-	nsEmbedString aDomain;
+-    CODE:
+-	nshtmldocument->SetDomain(aDomain);
+-
+-## GetEmbeds(nsIDOMHTMLCollection * *aEmbeds)
+-nsIDOMHTMLCollection *
+-moz_dom_GetEmbeds_htmlcollection (nshtmldocument)
+-	nsIDOMNSHTMLDocument *nshtmldocument;
+-    PREINIT:
+-	nsIDOMHTMLCollection * aEmbeds;
+-    CODE:
+-	nshtmldocument->GetEmbeds(&aEmbeds);
+-	RETVAL = aEmbeds;
+-    OUTPUT:
+-	RETVAL
+-
+-## GetSelection(nsAString & _retval)
+-nsEmbedString
+-moz_dom_GetSelection (nshtmldocument)
+-	nsIDOMNSHTMLDocument *nshtmldocument;
+-    PREINIT:
+-	nsEmbedString _retval;
+-    CODE:
+-	nshtmldocument->GetSelection(_retval);
+-	RETVAL = _retval;
+-    OUTPUT:
+-	RETVAL
+-
+-## Open(nsIDOMDocument **_retval)
+-## was: moz_dom_Open (nshtmldocument), nshtmldocument->Open(&_retval);
+-nsIDOMDocument *
+-moz_dom_Open (nshtmldocument, nsEmbedCString & contentType , PRBool & replace)
+-	nsIDOMNSHTMLDocument *nshtmldocument;
+-    PREINIT:
+-	nsIDOMDocument * _retval;
+-    CODE:
+-        nshtmldocument->Open(contentType, replace, &_retval);
+-	RETVAL = _retval;
+-    OUTPUT:
+-	RETVAL
+-
+-## Clear(void)
+-void
+-moz_dom_Clear (nshtmldocument)
+-	nsIDOMNSHTMLDocument *nshtmldocument;
+-    CODE:
+-	nshtmldocument->Clear();
+-
+-
+-## see https://developer.mozilla.org/en/Gecko_1.9_Changes_affecting_websites
+-
+-#ifdef NOT_SUPPORTED_ANYMORE
+-
+-## CaptureEvents(PRInt32 eventFlags)
+-void
+-moz_dom_CaptureEvents (nshtmldocument, eventFlags)
+-	nsIDOMNSHTMLDocument *nshtmldocument;
+-	PRInt32  eventFlags;
+-    CODE:
+-	nshtmldocument->CaptureEvents(eventFlags);
+-
+-## ReleaseEvents(PRInt32 eventFlags)
+-void
+-moz_dom_ReleaseEvents (nshtmldocument, eventFlags)
+-	nsIDOMNSHTMLDocument *nshtmldocument;
+-	PRInt32  eventFlags;
+-    CODE:
+-	nshtmldocument->ReleaseEvents(eventFlags);
+-
+-## RouteEvent(nsIDOMEvent *evt)
+-void
+-moz_dom_RouteEvent (nshtmldocument, evt)
+-	nsIDOMNSHTMLDocument *nshtmldocument;
+-	nsIDOMEvent * evt;
+-    CODE:
+-	nshtmldocument->RouteEvent(evt);
+-
+-#endif
+-
+-## GetCompatMode(nsAString & aCompatMode)
+-nsEmbedString
+-moz_dom_GetCompatMode (nshtmldocument)
+-	nsIDOMNSHTMLDocument *nshtmldocument;
+-    PREINIT:
+-	nsEmbedString aCompatMode;
+-    CODE:
+-	nshtmldocument->GetCompatMode(aCompatMode);
+-	RETVAL = aCompatMode;
+-    OUTPUT:
+-	RETVAL
+-
+-## GetPlugins(nsIDOMHTMLCollection * *aPlugins)
+-nsIDOMHTMLCollection *
+-moz_dom_GetPlugins_htmlcollection (nshtmldocument)
+-	nsIDOMNSHTMLDocument *nshtmldocument;
+-    PREINIT:
+-	nsIDOMHTMLCollection * aPlugins;
+-    CODE:
+-	nshtmldocument->GetPlugins(&aPlugins);
+-	RETVAL = aPlugins;
+-    OUTPUT:
+-	RETVAL
+-
+-## GetDesignMode(nsAString & aDesignMode)
+-nsEmbedString
+-moz_dom_GetDesignMode (nshtmldocument)
+-	nsIDOMNSHTMLDocument *nshtmldocument;
+-    PREINIT:
+-	nsEmbedString aDesignMode;
+-    CODE:
+-	nshtmldocument->GetDesignMode(aDesignMode);
+-	RETVAL = aDesignMode;
+-    OUTPUT:
+-	RETVAL
+-
+-## SetDesignMode(const nsAString & aDesignMode)
+-void
+-moz_dom_SetDesignMode (nshtmldocument, aDesignMode)
+-	nsIDOMNSHTMLDocument *nshtmldocument;
+-	nsEmbedString aDesignMode;
+-    CODE:
+-	nshtmldocument->SetDesignMode(aDesignMode);
+-
+-## ExecCommand(const nsAString & commandID, PRBool doShowUI, const nsAString & value, PRBool *_retval)
+-PRBool
+-moz_dom_ExecCommand (nshtmldocument, commandID, doShowUI, value)
+-	nsIDOMNSHTMLDocument *nshtmldocument;
+-	nsEmbedString commandID;
+-	PRBool  doShowUI;
+-	nsEmbedString value;
+-    PREINIT:
+-	PRBool _retval;
+-    CODE:
+-	nshtmldocument->ExecCommand(commandID, doShowUI, value, &_retval);
+-	RETVAL = _retval;
+-    OUTPUT:
+-	RETVAL
+-
+-## ExecCommandShowHelp(const nsAString & commandID, PRBool *_retval)
+-PRBool
+-moz_dom_ExecCommandShowHelp (nshtmldocument, commandID)
+-	nsIDOMNSHTMLDocument *nshtmldocument;
+-	nsEmbedString commandID;
+-    PREINIT:
+-	PRBool _retval;
+-    CODE:
+-	nshtmldocument->ExecCommandShowHelp(commandID, &_retval);
+-	RETVAL = _retval;
+-    OUTPUT:
+-	RETVAL
+-
+-## QueryCommandEnabled(const nsAString & commandID, PRBool *_retval)
+-PRBool
+-moz_dom_QueryCommandEnabled (nshtmldocument, commandID)
+-	nsIDOMNSHTMLDocument *nshtmldocument;
+-	nsEmbedString commandID;
+-    PREINIT:
+-	PRBool _retval;
+-    CODE:
+-	nshtmldocument->QueryCommandEnabled(commandID, &_retval);
+-	RETVAL = _retval;
+-    OUTPUT:
+-	RETVAL
+-
+-## QueryCommandIndeterm(const nsAString & commandID, PRBool *_retval)
+-PRBool
+-moz_dom_QueryCommandIndeterm (nshtmldocument, commandID)
+-	nsIDOMNSHTMLDocument *nshtmldocument;
+-	nsEmbedString commandID;
+-    PREINIT:
+-	PRBool _retval;
+-    CODE:
+-	nshtmldocument->QueryCommandIndeterm(commandID, &_retval);
+-	RETVAL = _retval;
+-    OUTPUT:
+-	RETVAL
+-
+-## QueryCommandState(const nsAString & commandID, PRBool *_retval)
+-PRBool
+-moz_dom_QueryCommandState (nshtmldocument, commandID)
+-	nsIDOMNSHTMLDocument *nshtmldocument;
+-	nsEmbedString commandID;
+-    PREINIT:
+-	PRBool _retval;
+-    CODE:
+-	nshtmldocument->QueryCommandState(commandID, &_retval);
+-	RETVAL = _retval;
+-    OUTPUT:
+-	RETVAL
+-
+-## QueryCommandSupported(const nsAString & commandID, PRBool *_retval)
+-PRBool
+-moz_dom_QueryCommandSupported (nshtmldocument, commandID)
+-	nsIDOMNSHTMLDocument *nshtmldocument;
+-	nsEmbedString commandID;
+-    PREINIT:
+-	PRBool _retval;
+-    CODE:
+-	nshtmldocument->QueryCommandSupported(commandID, &_retval);
+-	RETVAL = _retval;
+-    OUTPUT:
+-	RETVAL
+-
+-## QueryCommandText(const nsAString & commandID, nsAString & _retval)
+-nsEmbedString
+-moz_dom_QueryCommandText (nshtmldocument, commandID)
+-	nsIDOMNSHTMLDocument *nshtmldocument;
+-	nsEmbedString commandID;
+-    PREINIT:
+-	nsEmbedString _retval;
+-    CODE:
+-	nshtmldocument->QueryCommandText(commandID, _retval);
+-	RETVAL = _retval;
+-    OUTPUT:
+-	RETVAL
+-
+-## QueryCommandValue(const nsAString & commandID, nsAString & _retval)
+-nsEmbedString
+-moz_dom_QueryCommandValue (nshtmldocument, commandID)
+-	nsIDOMNSHTMLDocument *nshtmldocument;
+-	nsEmbedString commandID;
+-    PREINIT:
+-	nsEmbedString _retval;
+-    CODE:
+-	nshtmldocument->QueryCommandValue(commandID, _retval);
+-	RETVAL = _retval;
+-    OUTPUT:
+-	RETVAL
+-
+-# -----------------------------------------------------------------------------
+-
+-MODULE = Mozilla::DOM	PACKAGE = Mozilla::DOM::NSHTMLFormElement	PREFIX = moz_dom_
+-
+-# /usr/include/mozilla/dom/nsIDOMNSHTMLFormElement.h
+-
+-## NS_DEFINE_STATIC_IID_ACCESSOR(NS_IDOMNSHTMLFORMELEMENT_IID)
+-static nsIID
+-nsIDOMNSHTMLFormElement::GetIID()
+-    CODE:
+-	const nsIID &id = nsIDOMNSHTMLFormElement::GetIID();
+-	RETVAL = (nsIID) id;
+-    OUTPUT:
+-	RETVAL
+-
+-## GetEncoding(nsAString & aEncoding)
+-nsEmbedString
+-moz_dom_GetEncoding (nshtmlformelement)
+-	nsIDOMNSHTMLFormElement *nshtmlformelement;
+-    PREINIT:
+-	nsEmbedString aEncoding;
+-    CODE:
+-	nshtmlformelement->GetEncoding(aEncoding);
+-	RETVAL = aEncoding;
+-    OUTPUT:
+-	RETVAL
+-
+-## SetEncoding(const nsAString & aEncoding)
+-void
+-moz_dom_SetEncoding (nshtmlformelement, aEncoding)
+-	nsIDOMNSHTMLFormElement *nshtmlformelement;
+-	nsEmbedString aEncoding;
+-    CODE:
+-	nshtmlformelement->SetEncoding(aEncoding);
+-
+-# -----------------------------------------------------------------------------
+-
+-MODULE = Mozilla::DOM	PACKAGE = Mozilla::DOM::NSHTMLFrameElement	PREFIX = moz_dom_
+-
+-# /usr/include/mozilla/dom/nsIDOMNSHTMLFrameElement.h
+-
+-## NS_DEFINE_STATIC_IID_ACCESSOR(NS_IDOMNSHTMLFRAMEELEMENT_IID)
+-static nsIID
+-nsIDOMNSHTMLFrameElement::GetIID()
+-    CODE:
+-	const nsIID &id = nsIDOMNSHTMLFrameElement::GetIID();
+-	RETVAL = (nsIID) id;
+-    OUTPUT:
+-	RETVAL
+-
+-## GetContentWindow(nsIDOMWindow * *aContentWindow)
+-nsIDOMWindow *
+-moz_dom_GetContentWindow (nshtmlframeelement)
+-	nsIDOMNSHTMLFrameElement *nshtmlframeelement;
+-    PREINIT:
+-	nsIDOMWindow * aContentWindow;
+-    CODE:
+-	nshtmlframeelement->GetContentWindow(&aContentWindow);
+-	RETVAL = aContentWindow;
+-    OUTPUT:
+-	RETVAL
+-
+-# -----------------------------------------------------------------------------
+-
+-MODULE = Mozilla::DOM	PACKAGE = Mozilla::DOM::NSHTMLHRElement	PREFIX = moz_dom_
+-
+-# /usr/include/mozilla/dom/nsIDOMNSHTMLHRElement.h
+-
+-## NS_DEFINE_STATIC_IID_ACCESSOR(NS_IDOMNSHTMLHRELEMENT_IID)
+-static nsIID
+-nsIDOMNSHTMLHRElement::GetIID()
+-    CODE:
+-	const nsIID &id = nsIDOMNSHTMLHRElement::GetIID();
+-	RETVAL = (nsIID) id;
+-    OUTPUT:
+-	RETVAL
+-
+-## GetColor(nsAString & aColor)
+-nsEmbedString
+-moz_dom_GetColor (nshtmlhrelement)
+-	nsIDOMNSHTMLHRElement *nshtmlhrelement;
+-    PREINIT:
+-	nsEmbedString aColor;
+-    CODE:
+-	nshtmlhrelement->GetColor(aColor);
+-	RETVAL = aColor;
+-    OUTPUT:
+-	RETVAL
+-
+-## SetColor(const nsAString & aColor)
+-void
+-moz_dom_SetColor (nshtmlhrelement, aColor)
+-	nsIDOMNSHTMLHRElement *nshtmlhrelement;
+-	nsEmbedString aColor;
+-    CODE:
+-	nshtmlhrelement->SetColor(aColor);
+-
+-# -----------------------------------------------------------------------------
+-
+-MODULE = Mozilla::DOM	PACKAGE = Mozilla::DOM::NSHTMLTextAreaElement	PREFIX = moz_dom_
+-
+-# /usr/include/mozilla/dom/nsIDOMNSHTMLTextAreaElement.h
+-
+-## NS_DEFINE_STATIC_IID_ACCESSOR(NS_IDOMNSHTMLTEXTAREAELEMENT_IID)
+-static nsIID
+-nsIDOMNSHTMLTextAreaElement::GetIID()
+-    CODE:
+-	const nsIID &id = nsIDOMNSHTMLTextAreaElement::GetIID();
+-	RETVAL = (nsIID) id;
+-    OUTPUT:
+-	RETVAL
+-
+-### GetControllers(nsIControllers * *aControllers)
+-#nsIControllers *
+-#moz_dom_GetControllers (nshtmltextareaelement)
+-#	nsIDOMNSHTMLTextAreaElement *nshtmltextareaelement;
+-#    PREINIT:
+-#	nsIControllers * aControllers;
+-#    CODE:
+-#	nshtmltextareaelement->GetControllers(&aControllers);
+-#	RETVAL = aControllers;
+-#    OUTPUT:
+-#	RETVAL
+-
+-## GetTextLength(PRInt32 *aTextLength)
+-PRInt32
+-moz_dom_GetTextLength (nshtmltextareaelement)
+-	nsIDOMNSHTMLTextAreaElement *nshtmltextareaelement;
+-    PREINIT:
+-	PRInt32 aTextLength;
+-    CODE:
+-	nshtmltextareaelement->GetTextLength(&aTextLength);
+-	RETVAL = aTextLength;
+-    OUTPUT:
+-	RETVAL
+-
+-## GetSelectionStart(PRInt32 *aSelectionStart)
+-PRInt32
+-moz_dom_GetSelectionStart (nshtmltextareaelement)
+-	nsIDOMNSHTMLTextAreaElement *nshtmltextareaelement;
+-    PREINIT:
+-	PRInt32 aSelectionStart;
+-    CODE:
+-	nshtmltextareaelement->GetSelectionStart(&aSelectionStart);
+-	RETVAL = aSelectionStart;
+-    OUTPUT:
+-	RETVAL
+-
+-## SetSelectionStart(PRInt32 aSelectionStart)
+-void
+-moz_dom_SetSelectionStart (nshtmltextareaelement, aSelectionStart)
+-	nsIDOMNSHTMLTextAreaElement *nshtmltextareaelement;
+-	PRInt32  aSelectionStart;
+-    CODE:
+-	nshtmltextareaelement->SetSelectionStart(aSelectionStart);
+-
+-## GetSelectionEnd(PRInt32 *aSelectionEnd)
+-PRInt32
+-moz_dom_GetSelectionEnd (nshtmltextareaelement)
+-	nsIDOMNSHTMLTextAreaElement *nshtmltextareaelement;
+-    PREINIT:
+-	PRInt32 aSelectionEnd;
+-    CODE:
+-	nshtmltextareaelement->GetSelectionEnd(&aSelectionEnd);
+-	RETVAL = aSelectionEnd;
+-    OUTPUT:
+-	RETVAL
+-
+-## SetSelectionEnd(PRInt32 aSelectionEnd)
+-void
+-moz_dom_SetSelectionEnd (nshtmltextareaelement, aSelectionEnd)
+-	nsIDOMNSHTMLTextAreaElement *nshtmltextareaelement;
+-	PRInt32  aSelectionEnd;
+-    CODE:
+-	nshtmltextareaelement->SetSelectionEnd(aSelectionEnd);
+-
+-## SetSelectionRange(PRInt32 selectionStart, PRInt32 selectionEnd)
+-void
+-moz_dom_SetSelectionRange (nshtmltextareaelement, selectionStart, selectionEnd)
+-	nsIDOMNSHTMLTextAreaElement *nshtmltextareaelement;
+-	PRInt32  selectionStart;
+-	PRInt32  selectionEnd;
+-    CODE:
+-	nshtmltextareaelement->SetSelectionRange(selectionStart, selectionEnd);
+-
+-
+-# -----------------------------------------------------------------------------
+-
+ 
+ MODULE = Mozilla::DOM	PACKAGE = Mozilla::DOM::Navigator	PREFIX = moz_dom_
+ 
+@@ -12638,18 +11038,6 @@ moz_dom_GetProductSub (navigator)
+ #    OUTPUT:
+ #	RETVAL
+ 
+-## GetSecurityPolicy(nsAString & aSecurityPolicy)
+-nsEmbedString
+-moz_dom_GetSecurityPolicy (navigator)
+-	nsIDOMNavigator *navigator;
+-    PREINIT:
+-	nsEmbedString aSecurityPolicy;
+-    CODE:
+-	navigator->GetSecurityPolicy(aSecurityPolicy);
+-	RETVAL = aSecurityPolicy;
+-    OUTPUT:
+-	RETVAL
+-
+ ## GetUserAgent(nsAString & aUserAgent)
+ nsEmbedString
+ moz_dom_GetUserAgent (navigator)
+@@ -12667,7 +11055,7 @@ PRBool
+ moz_dom_GetCookieEnabled (navigator)
+ 	nsIDOMNavigator *navigator;
+     PREINIT:
+-	PRBool aCookieEnabled;
++	bool aCookieEnabled;
+     CODE:
+ 	navigator->GetCookieEnabled(&aCookieEnabled);
+ 	RETVAL = aCookieEnabled;
+@@ -12679,7 +11067,7 @@ PRBool
+ moz_dom_JavaEnabled (navigator)
+ 	nsIDOMNavigator *navigator;
+     PREINIT:
+-	PRBool _retval;
++	bool _retval;
+     CODE:
+ 	navigator->JavaEnabled(&_retval);
+ 	RETVAL = _retval;
+@@ -12691,7 +11079,7 @@ PRBool
+ moz_dom_TaintEnabled (navigator)
+ 	nsIDOMNavigator *navigator;
+     PREINIT:
+-	PRBool _retval;
++	bool _retval;
+     CODE:
+ 	navigator->TaintEnabled(&_retval);
+ 	RETVAL = _retval;
+--- Mozilla-DOM-0.23/mozilladom2perl.h.orig	2013-06-16 12:41:27.732078892 +0200
++++ Mozilla-DOM-0.23/mozilladom2perl.h	2013-06-17 18:00:34.739878962 +0200
+@@ -21,6 +21,8 @@
+ #ifndef _MOZILLADOM2PERL_H_
+ #define _MOZILLADOM2PERL_H_
+ 
++// for Mozilla headers
++#define __STDC_LIMIT_MACROS
+ 
+ #ifdef __cplusplus
+ extern "C" {
+@@ -32,6 +34,8 @@ extern "C" {
+ }
+ #endif
+ 
++// for mozilla headers
++#include <uchar.h>
+ 
+ /* Procedure to add a new typemap (necessary if an XSUB returns
+    something like nsIDOMEvent *)
+@@ -64,24 +68,17 @@ extern "C" {
+ #include "nsIURI.h"
+ #include "nsISelection.h"
+ #include "nsISupports.h"
++#include "nsIVariant.h"
+ 
+-#include "nsIDOMAbstractView.h"
+ #include "nsIDOMAttr.h"
+ #include "nsIDOMCharacterData.h"
+ #include "nsIDOMCDATASection.h"
+ #include "nsIDOMComment.h"
+ #include "nsIDOMDOMImplementation.h"
+ #include "nsIDOMDocument.h"
+-#include "nsIDOMNSDocument.h"
+-#include "nsIDOMDocumentEvent.h"
+ #include "nsIDOMDocumentFragment.h"
+-#include "nsIDOMDocumentRange.h"
+ #include "nsIDOMDocumentType.h"
+-#include "nsIDOMDocumentView.h"
+ #include "nsIDOMElement.h"
+-#include "nsIDOMEntity.h"
+-#include "nsIDOMEntityReference.h"
+-#include "nsIDOMNSElement.h"
+ #include "nsIDOMNSEvent.h"
+ #include "nsIDOMEvent.h"
+ #include "nsIDOMEventListener.h"
+@@ -92,16 +89,11 @@ extern "C" {
+ #include "nsIDOMMutationEvent.h"
+ #include "nsIDOMNamedNodeMap.h"
+ #include "nsIDOMNodeList.h"
+-#include "nsIDOMNotation.h"
+ #include "nsIDOMProcessingInstruction.h"
+ #include "nsIDOMRange.h"
+-#include "nsIDOMNSRange.h"
+ #include "nsIDOMText.h"
+ #include "nsIDOMUIEvent.h"
+-#include "nsIDOMNSUIEvent.h"
+ #include "nsIDOMWindow.h"
+-#include "nsIDOMWindow2.h"
+-#include "nsIDOMWindowInternal.h"
+ #include "nsIDOMWindowCollection.h"
+ #include "nsIDOMHistory.h"
+ #include "nsIDOMLocation.h"
+@@ -119,26 +111,20 @@ extern "C" {
+ #include "nsIDOMHTMLDListElement.h"
+ #include "nsIDOMHTMLDirectoryElement.h"
+ #include "nsIDOMHTMLDivElement.h"
+-#include "nsIDOMNSHTMLDocument.h"
+ #include "nsIDOMHTMLElement.h"
+-#include "nsIDOMNSHTMLElement.h"
+ #include "nsIDOMHTMLEmbedElement.h"
+ #include "nsIDOMHTMLFieldSetElement.h"
+ #include "nsIDOMHTMLFontElement.h"
+ #include "nsIDOMHTMLFormElement.h"
+-#include "nsIDOMNSHTMLFormElement.h"
+ #include "nsIDOMHTMLFrameElement.h"
+-#include "nsIDOMNSHTMLFrameElement.h"
+ #include "nsIDOMHTMLFrameSetElement.h"
+ #include "nsIDOMHTMLHRElement.h"
+-#include "nsIDOMNSHTMLHRElement.h"
+ #include "nsIDOMHTMLHeadElement.h"
+ #include "nsIDOMHTMLHeadingElement.h"
+ #include "nsIDOMHTMLHtmlElement.h"
+ #include "nsIDOMHTMLIFrameElement.h"
+ #include "nsIDOMHTMLImageElement.h"
+ #include "nsIDOMHTMLInputElement.h"
+-#include "nsIDOMHTMLIsIndexElement.h"
+ #include "nsIDOMHTMLLIElement.h"
+ #include "nsIDOMHTMLLabelElement.h"
+ #include "nsIDOMHTMLLegendElement.h"
+@@ -166,7 +152,6 @@ extern "C" {
+ #include "nsIDOMHTMLTableRowElement.h"
+ #include "nsIDOMHTMLTableSectionElem.h"   /* grr */
+ #include "nsIDOMHTMLTextAreaElement.h"
+-#include "nsIDOMNSHTMLTextAreaElement.h"
+ #include "nsIDOMHTMLTitleElement.h"
+ #include "nsIDOMHTMLUListElement.h"
+ 
+@@ -203,37 +188,28 @@ MOZDOM_DECL_I_TYPEMAPPERS(WebNavigation)
+ MOZDOM_DECL_I_TYPEMAPPERS(URI)
+ MOZDOM_DECL_I_TYPEMAPPERS(Selection)
+ MOZDOM_DECL_I_TYPEMAPPERS(Supports)
++MOZDOM_DECL_I_TYPEMAPPERS(Variant)
+ 
+-MOZDOM_DECL_DOM_TYPEMAPPERS(AbstractView)
+-MOZDOM_DECL_DOM_TYPEMAPPERS(DocumentView)
+ MOZDOM_DECL_DOM_TYPEMAPPERS(Event)
+ MOZDOM_DECL_DOM_TYPEMAPPERS(NSEvent)
+ MOZDOM_DECL_DOM_TYPEMAPPERS(UIEvent)
+-MOZDOM_DECL_DOM_TYPEMAPPERS(NSUIEvent)
+-MOZDOM_DECL_DOM_TYPEMAPPERS(DocumentEvent)
+ MOZDOM_DECL_DOM_TYPEMAPPERS(MutationEvent)
+ MOZDOM_DECL_DOM_TYPEMAPPERS(KeyEvent)
+ MOZDOM_DECL_DOM_TYPEMAPPERS(MouseEvent)
+ MOZDOM_DECL_DOM_TYPEMAPPERS(EventTarget)
+ MOZDOM_DECL_DOM_TYPEMAPPERS(EventListener)
+ MOZDOM_DECL_DOM_TYPEMAPPERS(Window)
+-MOZDOM_DECL_DOM_TYPEMAPPERS(Window2)
+ MOZDOM_DECL_DOM_TYPEMAPPERS(WindowInternal)
+ MOZDOM_DECL_DOM_TYPEMAPPERS(WindowCollection)
+ MOZDOM_DECL_DOM_TYPEMAPPERS(Document)
+-MOZDOM_DECL_DOM_TYPEMAPPERS(NSDocument)
+ MOZDOM_DECL_DOM_TYPEMAPPERS(DOMException)
+ MOZDOM_DECL_DOM_TYPEMAPPERS(DocumentFragment)
+-MOZDOM_DECL_DOM_TYPEMAPPERS(DocumentRange)
+ MOZDOM_DECL_DOM_TYPEMAPPERS(DocumentType)
+ MOZDOM_DECL_DOM_TYPEMAPPERS(Node)
+ MOZDOM_DECL_DOM_TYPEMAPPERS(NodeList)
+ MOZDOM_DECL_DOM_TYPEMAPPERS(NamedNodeMap)
+ MOZDOM_DECL_DOM_TYPEMAPPERS(Element)
+-MOZDOM_DECL_DOM_TYPEMAPPERS(Entity)
+-MOZDOM_DECL_DOM_TYPEMAPPERS(EntityReference)
+ MOZDOM_DECL_DOM_TYPEMAPPERS(Attr)
+-MOZDOM_DECL_DOM_TYPEMAPPERS(Notation)
+ MOZDOM_DECL_DOM_TYPEMAPPERS(ProcessingInstruction)
+ MOZDOM_DECL_DOM_TYPEMAPPERS(CDATASection)
+ MOZDOM_DECL_DOM_TYPEMAPPERS(Comment)
+@@ -241,7 +217,6 @@ MOZDOM_DECL_DOM_TYPEMAPPERS(CharacterDat
+ MOZDOM_DECL_DOM_TYPEMAPPERS(Text)
+ MOZDOM_DECL_DOM_TYPEMAPPERS(DOMImplementation)
+ MOZDOM_DECL_DOM_TYPEMAPPERS(Range)
+-MOZDOM_DECL_DOM_TYPEMAPPERS(NSRange)
+ MOZDOM_DECL_DOM_TYPEMAPPERS(History)
+ MOZDOM_DECL_DOM_TYPEMAPPERS(Location)
+ MOZDOM_DECL_DOM_TYPEMAPPERS(Navigator)
+@@ -258,26 +233,20 @@ MOZDOM_DECL_DOM_TYPEMAPPERS(HTMLCollecti
+ MOZDOM_DECL_DOM_TYPEMAPPERS(HTMLDListElement)
+ MOZDOM_DECL_DOM_TYPEMAPPERS(HTMLDirectoryElement)
+ MOZDOM_DECL_DOM_TYPEMAPPERS(HTMLDivElement)
+-MOZDOM_DECL_DOM_TYPEMAPPERS(NSHTMLDocument)
+ MOZDOM_DECL_DOM_TYPEMAPPERS(HTMLElement)
+-MOZDOM_DECL_DOM_TYPEMAPPERS(NSHTMLElement)
+ MOZDOM_DECL_DOM_TYPEMAPPERS(HTMLEmbedElement)
+ MOZDOM_DECL_DOM_TYPEMAPPERS(HTMLFieldSetElement)
+ MOZDOM_DECL_DOM_TYPEMAPPERS(HTMLFontElement)
+ MOZDOM_DECL_DOM_TYPEMAPPERS(HTMLFormElement)
+-MOZDOM_DECL_DOM_TYPEMAPPERS(NSHTMLFormElement)
+ MOZDOM_DECL_DOM_TYPEMAPPERS(HTMLFrameElement)
+-MOZDOM_DECL_DOM_TYPEMAPPERS(NSHTMLFrameElement)
+ MOZDOM_DECL_DOM_TYPEMAPPERS(HTMLFrameSetElement)
+ MOZDOM_DECL_DOM_TYPEMAPPERS(HTMLHRElement)
+-MOZDOM_DECL_DOM_TYPEMAPPERS(NSHTMLHRElement)
+ MOZDOM_DECL_DOM_TYPEMAPPERS(HTMLHeadElement)
+ MOZDOM_DECL_DOM_TYPEMAPPERS(HTMLHeadingElement)
+ MOZDOM_DECL_DOM_TYPEMAPPERS(HTMLHtmlElement)
+ MOZDOM_DECL_DOM_TYPEMAPPERS(HTMLIFrameElement)
+ MOZDOM_DECL_DOM_TYPEMAPPERS(HTMLImageElement)
+ MOZDOM_DECL_DOM_TYPEMAPPERS(HTMLInputElement)
+-MOZDOM_DECL_DOM_TYPEMAPPERS(HTMLIsIndexElement)
+ MOZDOM_DECL_DOM_TYPEMAPPERS(HTMLLIElement)
+ MOZDOM_DECL_DOM_TYPEMAPPERS(HTMLLabelElement)
+ MOZDOM_DECL_DOM_TYPEMAPPERS(HTMLLegendElement)
+@@ -305,7 +274,6 @@ MOZDOM_DECL_DOM_TYPEMAPPERS(HTMLTableEle
+ MOZDOM_DECL_DOM_TYPEMAPPERS(HTMLTableRowElement)
+ MOZDOM_DECL_DOM_TYPEMAPPERS(HTMLTableSectionElement)
+ MOZDOM_DECL_DOM_TYPEMAPPERS(HTMLTextAreaElement)
+-MOZDOM_DECL_DOM_TYPEMAPPERS(NSHTMLTextAreaElement)
+ MOZDOM_DECL_DOM_TYPEMAPPERS(HTMLTitleElement)
+ MOZDOM_DECL_DOM_TYPEMAPPERS(HTMLUListElement)
+ 
+--- Mozilla-DOM-0.23/mozilladom.typemap.orig	2013-06-16 12:41:27.732078892 +0200
++++ Mozilla-DOM-0.23/mozilladom.typemap	2013-06-17 18:07:54.366536466 +0200
+@@ -5,6 +5,7 @@ nsIWebNavigation *		T_MOZDOM_GENERIC_WRA
+ nsIURI *			T_MOZDOM_GENERIC_WRAPPER
+ nsISelection *			T_MOZDOM_GENERIC_WRAPPER
+ nsISupports *			T_MOZDOM_GENERIC_WRAPPER
++nsIVariant *			T_MOZDOM_GENERIC_WRAPPER
+ 
+ nsIDOMAbstractView *		T_MOZDOM_GENERIC_WRAPPER
+ nsIDOMDocumentView *		T_MOZDOM_GENERIC_WRAPPER
+--- Mozilla-DOM-0.23/xs/DOM.xs.orig	2013-06-17 19:05:37.949797607 +0200
++++ Mozilla-DOM-0.23/xs/DOM.xs	2013-06-17 21:32:29.906280608 +0200
+@@ -29,6 +29,7 @@
+ MOZDOM_DEF_I_TYPEMAPPERS(URI)
+ MOZDOM_DEF_I_TYPEMAPPERS(Selection)
+ MOZDOM_DEF_I_TYPEMAPPERS(Supports)
++MOZDOM_DEF_I_TYPEMAPPERS(Variant)
+ 
+ MOZDOM_DEF_DOM_TYPEMAPPERS(Event)
+ MOZDOM_DEF_DOM_TYPEMAPPERS(NSEvent)
