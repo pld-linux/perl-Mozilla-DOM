@@ -86,6 +86,5 @@ rm -rf $RPM_BUILD_ROOT
 # XXX: shared with perl-Mozilla-LDAP
 %dir %{perl_vendorarch}/auto/Mozilla
 %dir %{perl_vendorarch}/auto/Mozilla/DOM
-%{perl_vendorarch}/auto/Mozilla/DOM/DOM.bs
 %attr(755,root,root) %{perl_vendorarch}/auto/Mozilla/DOM/DOM.so
 %{_mandir}/man3/Mozilla::DOM*.3pm*
