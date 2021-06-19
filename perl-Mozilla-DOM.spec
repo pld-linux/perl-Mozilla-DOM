@@ -16,13 +16,16 @@ Source0:	http://www.cpan.org/modules/by-module/Mozilla/SLANNING/%{pdir}-%{pnam}-
 Patch0:		%{name}-xulrunner.patch
 Patch1:		%{name}-man.patch
 Patch2:		%{name}-xulrunner19.patch
+Patch3:		%{name}-Move.patch
+Patch4:		%{name}-xulrunner52.patch
 URL:		http://search.cpan.org/dist/Mozilla-DOM/
-BuildRequires:	libstdc++-devel
+BuildRequires:	libstdc++-devel >= 6:4.7
 BuildRequires:	perl-ExtUtils-Depends >= 0.205
 BuildRequires:	perl-ExtUtils-PkgConfig >= 1.07
 BuildRequires:	perl-devel >= 1:5.8.0
-BuildRequires:	rpmbuild(macros) >= 1.167
+BuildRequires:	pkgconfig
 BuildRequires:	rpm-perlprov >= 4.1-13
+BuildRequires:	rpmbuild(macros) >= 1.745
 BuildRequires:	xulrunner-devel >= 19
 %requires_eq	xulrunner-libs
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
@@ -50,6 +53,8 @@ szczegółów w `perldoc Mozilla::DOM`.
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
+%patch3 -p1
+%patch4 -p1
 
 %build
 echo | %{__perl} Makefile.PL \
@@ -57,7 +62,7 @@ echo | %{__perl} Makefile.PL \
 
 %{__make} \
 	CC="%{__cxx}" \
-	LDDLFLAGS="-shared %{rpmldflags} -Wl,-rpath,%{_libdir}/xulrunner" \
+	LDDLFLAGS="-shared %{rpmldflags} -Wl,-rpath,$(pkg-config --variable=libdir libxul)" \
 	OPTIMIZE="%{rpmcxxflags}"
 
 %{?with_tests:%{__make} test}

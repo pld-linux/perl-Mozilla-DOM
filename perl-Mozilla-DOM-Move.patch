@@ -1,0 +1,12 @@
+--- Mozilla-DOM-0.23/mozilladom2perl.h.orig	2021-06-19 11:28:37.790904541 +0200
++++ Mozilla-DOM-0.23/mozilladom2perl.h	2021-06-19 11:45:32.808739051 +0200
+@@ -34,6 +34,9 @@
+ }
+ #endif
+ 
++// perl macro conflicting with xulrunner headers
++#undef Move
++
+ // for mozilla headers
+ #include <uchar.h>
+ 
