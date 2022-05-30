@@ -11,14 +11,14 @@ Version:	0.23
 Release:	6
 License:	LGPL v2.1+
 Group:		Development/Languages/Perl
-Source0:	http://www.cpan.org/modules/by-module/Mozilla/SLANNING/%{pdir}-%{pnam}-%{version}.tar.gz
+Source0:	http://www.cpan.org/modules/by-module/Mozilla/%{pdir}-%{pnam}-%{version}.tar.gz
 # Source0-md5:	8a066c3ccf418af44515975602cf1fab
 Patch0:		%{name}-xulrunner.patch
 Patch1:		%{name}-man.patch
 Patch2:		%{name}-xulrunner19.patch
 Patch3:		%{name}-Move.patch
 Patch4:		%{name}-xulrunner52.patch
-URL:		http://search.cpan.org/dist/Mozilla-DOM/
+URL:		https://metacpan.org/dist/Mozilla-DOM
 BuildRequires:	libstdc++-devel >= 6:4.7
 BuildRequires:	perl-ExtUtils-Depends >= 0.205
 BuildRequires:	perl-ExtUtils-PkgConfig >= 1.07
@@ -27,7 +27,7 @@ BuildRequires:	pkgconfig
 BuildRequires:	rpm-perlprov >= 4.1-13
 BuildRequires:	rpmbuild(macros) >= 1.745
 BuildRequires:	xulrunner-devel >= 19
-%requires_eq	xulrunner-libs
+Requires:	xulrunner-libs = %(rpm -q --what-provides xulrunner-devel --qf '[%%{PROVIDENAME}^%%{PROVIDEVERSION}\n]' | grep xulrunner-devel | cut -d^ -f2)
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %description
