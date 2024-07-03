@@ -1,6 +1,6 @@
 #
 # Conditional build:
-%bcond_without	tests	# do not perform "make test"
+%bcond_without	tests	# unit tests
 #
 %define		pdir	Mozilla
 %define		pnam	DOM
@@ -11,7 +11,7 @@ Version:	0.23
 Release:	6
 License:	LGPL v2.1+
 Group:		Development/Languages/Perl
-Source0:	http://www.cpan.org/modules/by-module/Mozilla/%{pdir}-%{pnam}-%{version}.tar.gz
+Source0:	https://www.cpan.org/modules/by-module/Mozilla/%{pdir}-%{pnam}-%{version}.tar.gz
 # Source0-md5:	8a066c3ccf418af44515975602cf1fab
 Patch0:		%{name}-xulrunner.patch
 Patch1:		%{name}-man.patch
