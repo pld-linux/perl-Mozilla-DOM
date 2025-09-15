@@ -63,7 +63,7 @@ echo | %{__perl} Makefile.PL \
 %{__make} \
 	CC="%{__cxx}" \
 	LDDLFLAGS="-shared %{rpmldflags} -Wl,-rpath,$(pkg-config --variable=libdir libxul)" \
-	OPTIMIZE="%{rpmcxxflags}"
+	OPTIMIZE="%{rpmcxxflags} -std=c++11"
 
 %{?with_tests:%{__make} test}
 
